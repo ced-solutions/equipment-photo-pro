@@ -225,6 +225,39 @@ app.get('/api/ai-status', (req, res) => {
   });
 });
 
+// Simple test endpoint to verify image processing works
+app.post('/api/simple-test', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image uploaded' });
+    }
+
+    const inputPath = req.file.path;
+    const outputPath = path.join(uploadsDir, 'test-simple-' + req.file.filename);
+    
+    // Apply basic but noticeable enhancements
+    await sharp(inputPath)
+      .modulate({
+        brightness: 1.5,    // Make it brighter
+        contrast: 1.5,      // Increase contrast
+        saturation: 1.5     // Increase color saturation
+      })
+      .sharpen(2.0)         // Sharpen the image
+      .jpeg({ quality: 95 })
+      .toFile(outputPath);
+    
+    res.json({
+      success: true,
+      message: 'Simple test processing completed - image should be noticeably brighter and more colorful',
+      original: req.file.filename,
+      enhanced: 'test-simple-' + req.file.filename
+    });
+  } catch (error) {
+    console.error('Simple test error:', error);
+    res.status(500).json({ error: 'Simple test failed: ' + error.message });
+  }
+});
+
 // Test image processing endpoint
 app.post('/api/test-process', upload.single('image'), async (req, res) => {
   try {
