@@ -119,6 +119,18 @@ The image should look professional and suitable for a dealership listing.`;
       
     } catch (error) {
       console.error('Google AI image generation error:', error);
+      
+      // Check if it's a quota exceeded error
+      if (error.message.includes('429') || error.message.includes('quota') || error.message.includes('Too Many Requests')) {
+        console.log('Google AI quota exceeded, falling back to manual processing');
+        return {
+          success: false,
+          message: 'Google AI quota exceeded - using manual enhancement',
+          quotaExceeded: true,
+          fallback: true
+        };
+      }
+      
       throw new Error('Failed to enhance image with Google AI: ' + error.message);
     }
   }
