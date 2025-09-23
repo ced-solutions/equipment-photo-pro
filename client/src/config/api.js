@@ -1,6 +1,6 @@
 // API Configuration
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://your-backend-url.railway.app'  // Replace with your actual backend URL after deployment
+  ? 'https://equipment-photo-pro.onrender.com'  // Your deployed Render backend
   : 'http://localhost:5001';
 
 export const API_ENDPOINTS = {
