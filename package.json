@@ -1,0 +1,37 @@
+{
+  "name": "equipment-photo-pro",
+  "version": "1.0.0",
+  "description": "Professional equipment photo enhancement tool",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "nodemon server/index.js",
+    "client": "cd client && npm start",
+    "build": "cd client && npm run build",
+    "install-all": "npm install && cd client && npm install"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.18.2",
+    "form-data": "^4.0.4",
+    "multer": "^1.4.5-lts.1",
+    "node-fetch": "^3.3.2",
+    "sharp": "^0.32.6",
+    "sqlite3": "^5.1.6"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "equipment",
+    "photo",
+    "enhancement",
+    "ai",
+    "dealership"
+  ],
+  "author": "Equipment Photo Pro",
+  "license": "MIT"
+}
