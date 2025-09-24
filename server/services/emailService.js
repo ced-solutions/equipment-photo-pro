@@ -8,10 +8,33 @@ class EmailService {
   }
 
   init() {
-    // For development, we'll use a simple console log
-    // In production, you'd configure with a real email service
-    console.log('Email service initialized (development mode)');
-    this.isConfigured = true;
+    // Check if email is configured for production
+    const emailConfig = {
+      service: process.env.EMAIL_SERVICE || 'gmail', // gmail, outlook, sendgrid, etc.
+      user: process.env.EMAIL_USER,
+      password: process.env.EMAIL_PASSWORD,
+      from: process.env.EMAIL_FROM || 'Equipment Photo Pro <noreply@equipmentphotopro.com>'
+    };
+
+    if (emailConfig.user && emailConfig.password) {
+      // Configure real email service
+      this.transporter = nodemailer.createTransporter({
+        service: emailConfig.service,
+        auth: {
+          user: emailConfig.user,
+          pass: emailConfig.password
+        }
+      });
+      
+      this.fromAddress = emailConfig.from;
+      this.isConfigured = true;
+      console.log('Email service initialized with real SMTP');
+    } else {
+      // Development mode - log to console
+      console.log('Email service initialized (development mode - no SMTP configured)');
+      console.log('To enable real emails, set EMAIL_USER and EMAIL_PASSWORD environment variables');
+      this.isConfigured = true;
+    }
   }
 
   // Generate a 6-digit verification code
@@ -26,7 +49,7 @@ class EmailService {
     }
 
     const mailOptions = {
-      from: 'Equipment Photo Pro <noreply@equipmentphotopro.com>',
+      from: this.fromAddress || 'Equipment Photo Pro <noreply@equipmentphotopro.com>',
       to: email,
       subject: 'Your Equipment Photo Pro Login Code',
       html: `
@@ -69,15 +92,22 @@ class EmailService {
       `
     };
 
-    // In development, just log the code
-    console.log(`\n📧 EMAIL VERIFICATION CODE for ${email}: ${code}\n`);
-    console.log('In production, this would be sent via email service');
-    
-    // For production, uncomment the following:
-    // return this.transporter.sendMail(mailOptions);
-    
-    // For now, simulate successful send
-    return Promise.resolve({ messageId: 'dev-' + Date.now() });
+    // Send email if transporter is configured, otherwise log to console
+    if (this.transporter) {
+      try {
+        const result = await this.transporter.sendMail(mailOptions);
+        console.log(`✅ Verification code sent to ${email}`);
+        return result;
+      } catch (error) {
+        console.error('❌ Failed to send email:', error);
+        throw new Error('Failed to send verification email');
+      }
+    } else {
+      // Development mode - log the code
+      console.log(`\n📧 EMAIL VERIFICATION CODE for ${email}: ${code}\n`);
+      console.log('🔧 To enable real emails, set EMAIL_USER and EMAIL_PASSWORD environment variables');
+      return Promise.resolve({ messageId: 'dev-' + Date.now() });
+    }
   }
 
   // Send welcome email
