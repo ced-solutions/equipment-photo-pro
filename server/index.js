@@ -8,6 +8,65 @@ const fs = require('fs');
 const GoogleAIService = require('./services/googleAI');
 
 const app = express();
+
+// Function to add watermark to processed images
+const addWatermark = async (imagePath) => {
+  try {
+    const watermarkText = "Enhanced by AI for visual presentation";
+    const watermarkSubtext = "Certain artifacts may have been modified during processing";
+    
+    // Create a temporary watermark image
+    const watermarkSvg = `
+      <svg width="400" height="60" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="1" dy="1" stdDeviation="1" flood-color="rgba(0,0,0,0.3)"/>
+          </filter>
+        </defs>
+        <text x="10" y="20" font-family="Arial, sans-serif" font-size="12" fill="rgba(255,255,255,0.7)" filter="url(#shadow)">
+          ${watermarkText}
+        </text>
+        <text x="10" y="35" font-family="Arial, sans-serif" font-size="10" fill="rgba(255,255,255,0.6)" filter="url(#shadow)">
+          ${watermarkSubtext}
+        </text>
+      </svg>
+    `;
+    
+    // Convert SVG to buffer
+    const watermarkBuffer = Buffer.from(watermarkSvg);
+    
+    // Get image dimensions
+    const imageMetadata = await sharp(imagePath).metadata();
+    
+    // Create watermark with proper positioning
+    const watermark = await sharp(watermarkBuffer)
+      .resize(Math.min(400, imageMetadata.width * 0.3)) // Scale watermark to image size
+      .png()
+      .toBuffer();
+    
+    // Composite watermark onto image (bottom left, 15px margin)
+    const watermarkedImage = await sharp(imagePath)
+      .composite([
+        {
+          input: watermark,
+          gravity: 'southwest',
+          left: 15,
+          bottom: 15
+        }
+      ])
+      .jpeg({ quality: 95, progressive: true, mozjpeg: true })
+      .toBuffer();
+    
+    // Write watermarked image back to file
+    fs.writeFileSync(imagePath, watermarkedImage);
+    
+    console.log('Watermark added to:', imagePath);
+    return true;
+  } catch (error) {
+    console.error('Error adding watermark:', error);
+    return false;
+  }
+};
 const PORT = process.env.PORT || 5001;
 
 // Initialize Google AI service
@@ -196,6 +255,9 @@ const enhanceImage = async (inputPath, outputPath, settings, prompt) => {
     })
     .toFile(outputPath);
     
+  // Add watermark to the processed image
+  await addWatermark(outputPath);
+    
   console.log('Image processing completed for:', outputPath);
     
   return aiEnhancements;
@@ -245,6 +307,9 @@ app.post('/api/simple-test', upload.single('image'), async (req, res) => {
       .sharpen(2.0)         // Sharpen the image
       .jpeg({ quality: 95 })
       .toFile(outputPath);
+    
+    // Add watermark to the test image
+    await addWatermark(outputPath);
     
     res.json({
       success: true,
