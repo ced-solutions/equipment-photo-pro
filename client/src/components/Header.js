@@ -124,7 +124,7 @@ const Header = ({ showLoginModal, setShowLoginModal, showAdminDashboard, setShow
                 </div>
 
                 {/* Admin Dashboard Button */}
-                {user.isAdmin && (
+                {user.isAdmin ? (
                   <button
                     onClick={() => setShowAdminDashboard(true)}
                     className="hidden sm:flex items-center space-x-1 bg-purple-100 text-purple-700 px-3 py-1 rounded-md text-xs hover:bg-purple-200 transition-colors"
@@ -132,7 +132,7 @@ const Header = ({ showLoginModal, setShowLoginModal, showAdminDashboard, setShow
                     <BarChart3 className="h-3 w-3" />
                     <span>Admin</span>
                   </button>
-                )}
+                ) : null}
 
                 {/* Logout Button */}
                 <button
@@ -230,7 +230,7 @@ const Header = ({ showLoginModal, setShowLoginModal, showAdminDashboard, setShow
                   </div>
                 )}
 
-                {user.isAdmin && (
+                {user.isAdmin ? (
                   <button
                     onClick={() => {
                       setShowAdminDashboard(true);
@@ -241,7 +241,7 @@ const Header = ({ showLoginModal, setShowLoginModal, showAdminDashboard, setShow
                     <BarChart3 className="h-3 w-3" />
                     <span>Admin Dashboard</span>
                   </button>
-                )}
+                ) : null}
                 
                 <button
                   onClick={() => {
