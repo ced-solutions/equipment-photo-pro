@@ -215,16 +215,24 @@ class DatabaseService {
 
   async getSession(token) {
     return new Promise((resolve, reject) => {
+      const currentTime = new Date().toISOString();
       const sql = `
         SELECT s.*, u.email, u.is_admin, u.images_processed_count 
         FROM sessions s 
         JOIN users u ON s.user_id = u.id 
-        WHERE s.session_token = ? AND s.expires_at > CURRENT_TIMESTAMP
+        WHERE s.session_token = ? AND s.expires_at > ?
       `;
-      this.db.get(sql, [token], (err, row) => {
+      console.log(`🔍 Getting session for token: ${token.substring(0, 10)}...`);
+      console.log(`⏰ Current time for session check: ${currentTime}`);
+      this.db.get(sql, [token, currentTime], (err, row) => {
         if (err) {
+          console.log('❌ Database error getting session:', err);
           reject(err);
         } else {
+          console.log('📊 Session result:', row ? 'Valid session found' : 'No valid session found');
+          if (row) {
+            console.log(`⏰ Session expires at: ${row.expires_at}, Current time: ${currentTime}`);
+          }
           resolve(row);
         }
       });

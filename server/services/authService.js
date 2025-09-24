@@ -112,7 +112,9 @@ class AuthService {
       // Create session
       const sessionToken = this.generateSessionToken();
       const sessionExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
-      await this.db.createSession(user.id, sessionToken, sessionExpiresAt);
+      const sessionExpiresAtISO = sessionExpiresAt.toISOString();
+      console.log(`🔑 Creating session - expires at: ${sessionExpiresAtISO}`);
+      await this.db.createSession(user.id, sessionToken, sessionExpiresAtISO);
 
       return {
         success: true,
@@ -136,14 +138,20 @@ class AuthService {
   // Verify session token
   async verifySession(sessionToken) {
     try {
+      console.log(`🔍 Verifying session token: ${sessionToken ? sessionToken.substring(0, 10) + '...' : 'null'}`);
+      
       if (!sessionToken) {
+        console.log('❌ No session token provided');
         throw new Error('No session token provided');
       }
 
       const session = await this.db.getSession(sessionToken);
       if (!session) {
+        console.log('❌ Invalid or expired session');
         throw new Error('Invalid or expired session');
       }
+      
+      console.log('✅ Valid session found');
 
       return {
         success: true,
