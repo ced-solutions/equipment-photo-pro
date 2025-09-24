@@ -18,7 +18,7 @@ class EmailService {
 
     if (emailConfig.user && emailConfig.password) {
       // Configure real email service
-      this.transporter = nodemailer.createTransporter({
+      this.transporter = nodemailer.createTransport({
         service: emailConfig.service,
         auth: {
           user: emailConfig.user,
