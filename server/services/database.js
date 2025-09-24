@@ -278,12 +278,18 @@ class DatabaseService {
     return new Promise((resolve, reject) => {
       const sql = `
         SELECT * FROM auth_codes 
-        WHERE email = ? AND code = ? AND expires_at > CURRENT_TIMESTAMP AND used = FALSE
+        WHERE email = ? AND code = ? AND expires_at > datetime('now') AND used = FALSE
       `;
+      console.log(`🔍 Database validation - email: ${email}, code: ${code}`);
       this.db.get(sql, [email, code], (err, row) => {
         if (err) {
+          console.log('❌ Database error:', err);
           reject(err);
         } else {
+          console.log('📊 Database result:', row ? 'Found valid code' : 'No valid code found');
+          if (row) {
+            console.log(`⏰ Code expires at: ${row.expires_at}, Current time: ${new Date().toISOString()}`);
+          }
           resolve(row);
         }
       });
@@ -292,7 +298,7 @@ class DatabaseService {
 
   async markAuthCodeAsUsed(email, code) {
     return new Promise((resolve, reject) => {
-      const sql = 'UPDATE auth_codes SET used = TRUE, used_at = CURRENT_TIMESTAMP WHERE email = ? AND code = ?';
+      const sql = 'UPDATE auth_codes SET used = TRUE, used_at = datetime(\'now\') WHERE email = ? AND code = ?';
       this.db.run(sql, [email, code], (err) => {
         if (err) {
           reject(err);

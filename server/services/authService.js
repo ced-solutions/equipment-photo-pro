@@ -20,23 +20,33 @@ class AuthService {
   // Send login code to email
   async sendLoginCode(email) {
     try {
+      console.log(`📤 Sending login code to: ${email}`);
+      
       // Validate email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
+        console.log('❌ Invalid email format:', email);
         throw new Error('Invalid email format');
       }
 
       // Generate verification code
       const code = this.emailService.generateVerificationCode();
+      console.log(`🔢 Generated code: ${code}`);
       
       // Set expiration time (10 minutes from now)
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+      console.log(`⏰ Code expires at: ${expiresAt.toISOString()}`);
+
+      const normalizedEmail = email.toLowerCase();
+      console.log(`📧 Normalized email: ${normalizedEmail}`);
 
       // Store the code in database
-      await this.db.createAuthCode(email.toLowerCase(), code, expiresAt);
+      await this.db.createAuthCode(normalizedEmail, code, expiresAt);
+      console.log('💾 Code stored in database');
 
       // Send email
-      await this.emailService.sendVerificationCode(email.toLowerCase(), code);
+      await this.emailService.sendVerificationCode(normalizedEmail, code);
+      console.log('📧 Email sent successfully');
 
       return {
         success: true,
@@ -52,22 +62,30 @@ class AuthService {
   // Verify login code and create session
   async verifyLoginCode(email, code) {
     try {
+      console.log(`🔍 Verifying login code for: ${email}, code: ${code}`);
+      
       // Validate email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
+        console.log('❌ Invalid email format:', email);
         throw new Error('Invalid email format');
       }
 
       // Validate code format (6 digits)
       if (!/^\d{6}$/.test(code)) {
+        console.log('❌ Invalid code format:', code);
         throw new Error('Invalid code format');
       }
 
       const normalizedEmail = email.toLowerCase();
+      console.log(`📧 Normalized email: ${normalizedEmail}`);
 
       // Verify the code
       const authCode = await this.db.validateAuthCode(normalizedEmail, code);
+      console.log('🔑 Auth code validation result:', authCode);
+      
       if (!authCode) {
+        console.log('❌ No valid auth code found');
         throw new Error('Invalid or expired verification code');
       }
 
