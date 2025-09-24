@@ -184,8 +184,12 @@ class AuthService {
   // Middleware for protecting routes
   async requireAuth(req, res, next) {
     try {
+      console.log('🔒 requireAuth middleware called');
       const authHeader = req.headers.authorization;
+      console.log('📋 Auth header:', authHeader ? `${authHeader.substring(0, 20)}...` : 'No auth header');
+      
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        console.log('❌ No valid auth header found');
         return res.status(401).json({ 
           error: 'Authentication required',
           message: 'Please log in to access this feature'
@@ -193,11 +197,15 @@ class AuthService {
       }
 
       const sessionToken = authHeader.substring(7);
+      console.log('🎫 Session token extracted:', sessionToken ? `${sessionToken.substring(0, 10)}...` : 'No token');
+      
       const authResult = await this.verifySession(sessionToken);
+      console.log('✅ Session verified successfully');
       
       req.user = authResult.user;
       next();
     } catch (error) {
+      console.log('❌ requireAuth error:', error.message);
       return res.status(401).json({ 
         error: 'Invalid session',
         message: 'Please log in again'
