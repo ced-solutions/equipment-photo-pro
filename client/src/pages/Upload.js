@@ -251,37 +251,21 @@ CRITICAL: Do not alter the subject of the image at all. Keep the equipment exact
         }
       }
 
-        setProcessedFiles(processed);
+      // Set processed files
+      setProcessedFiles(processed);
 
-        // Add to history
-        const historyEntry = {
-          id: Date.now(),
-          timestamp: new Date().toLocaleString(),
-          files: processed,
-          promptSettings: { ...promptSettings },
-          prompt: result.prompt
-        };
-        setHistory(prev => [historyEntry, ...prev]);
+      // Add to history
+      const historyEntry = {
+        id: Date.now(),
+        timestamp: new Date().toLocaleString(),
+        files: processed,
+        promptSettings: { ...promptSettings },
+        prompt: generatePrompt()
+      };
+      setHistory(prev => [historyEntry, ...prev]);
 
-        // Show success notification and scroll to results
-        setShowSuccessNotification(true);
-      } else {
-        console.error('Processing failed:', result.message);
-        
-        // Update progress to error
-        files.forEach(file => {
-          setProcessingProgress(prev => ({
-            ...prev,
-            [file.name]: {
-              status: 'error',
-              progress: 0,
-              message: 'Processing failed'
-            }
-          }));
-        });
-        
-        alert('Processing failed: ' + result.message);
-      }
+      // Show success notification and scroll to results
+      setShowSuccessNotification(true);
     } catch (error) {
       console.error('Error processing images:', error);
       
