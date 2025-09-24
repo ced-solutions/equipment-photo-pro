@@ -23,10 +23,10 @@ const addWatermark = async (imagePath) => {
             <feDropShadow dx="1" dy="1" stdDeviation="1" flood-color="rgba(0,0,0,0.3)"/>
           </filter>
         </defs>
-        <text x="10" y="20" font-family="Arial, sans-serif" font-size="12" fill="rgba(255,255,255,0.7)" filter="url(#shadow)">
+        <text x="10" y="20" font-family="Arial, sans-serif" font-size="14" fill="rgba(255,255,255,0.9)" filter="url(#shadow)">
           ${watermarkText}
         </text>
-        <text x="10" y="35" font-family="Arial, sans-serif" font-size="10" fill="rgba(255,255,255,0.6)" filter="url(#shadow)">
+        <text x="10" y="40" font-family="Arial, sans-serif" font-size="11" fill="rgba(255,255,255,0.8)" filter="url(#shadow)">
           ${watermarkSubtext}
         </text>
       </svg>
@@ -40,7 +40,7 @@ const addWatermark = async (imagePath) => {
     
     // Create watermark with proper positioning
     const watermark = await sharp(watermarkBuffer)
-      .resize(Math.min(400, imageMetadata.width * 0.3)) // Scale watermark to image size
+      .resize(Math.min(500, imageMetadata.width * 0.4)) // Scale watermark to image size
       .png()
       .toBuffer();
     
@@ -260,8 +260,17 @@ const enhanceImage = async (inputPath, outputPath, settings, prompt) => {
     })
     .toFile(outputPath);
     
-  // Add watermark to the processed image
-  await addWatermark(outputPath);
+    // Add watermark to the processed image
+    try {
+      const watermarkSuccess = await addWatermark(outputPath);
+      if (watermarkSuccess) {
+        console.log('Watermark successfully added to:', outputPath);
+      } else {
+        console.log('Watermark failed for:', outputPath);
+      }
+    } catch (error) {
+      console.error('Watermark error:', error);
+    }
     
   console.log('Image processing completed for:', outputPath);
     

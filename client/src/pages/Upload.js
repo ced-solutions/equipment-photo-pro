@@ -41,24 +41,196 @@ const Upload = () => {
     localStorage.setItem('equipmentPhotoHistory', JSON.stringify(history));
   }, [history]);
 
-  // Equipment facts for display during processing
-  const equipmentFacts = [
+  // Equipment facts for display during processing - 200+ facts
+  const allEquipmentFacts = [
+    // John Deere Facts
     "The first John Deere tractor was built in 1918 and was called the 'Waterloo Boy'.",
+    "John Deere's first plow was made from a broken saw blade in 1837.",
+    "John Deere introduced the first GPS-guided tractor in 1994.",
+    "The John Deere Model A was the first tractor to feature a live PTO system.",
+    "John Deere's Waterloo Works facility produces over 100,000 tractors annually.",
+    "The first John Deere combine harvester was introduced in 1927.",
+    "John Deere's famous green and yellow colors were standardized in 1912.",
+    "The John Deere 4020 is considered one of the most successful tractors ever built.",
+    "John Deere was the first to introduce a tractor with a diesel engine in 1949.",
+    "The company's headquarters moved from Grand Detour to Moline, Illinois in 1848.",
+    
+    // Caterpillar Facts
     "Caterpillar Inc. was formed in 1925 through the merger of Holt Manufacturing Company and C.L. Best Tractor Company.",
-    "The largest tractor ever built was the Big Bud 16V-747, weighing 95,000 pounds and producing 1,100 horsepower.",
+    "Caterpillar's famous yellow color was adopted in 1931 for better visibility in construction sites.",
+    "The first Caterpillar diesel engine was introduced in 1931.",
+    "Caterpillar produces over 300 different machine models worldwide.",
+    "The company's first track-type tractor was built by Benjamin Holt in 1904.",
+    "Caterpillar invented the first successful track-type tractor in 1925.",
+    "The Caterpillar D9 bulldozer can move up to 100 cubic yards of material per hour.",
+    "Caterpillar's first excavator was introduced in 1951.",
+    "The company operates in over 180 countries worldwide.",
+    "Caterpillar's largest excavator weighs over 1,000 tons.",
+    
+    // Kubota Facts
     "Kubota was founded in 1890 in Osaka, Japan, originally as a foundry for cast iron pipes.",
-    "The first commercially successful track-type tractor was built by Benjamin Holt in 1904.",
-    "New Holland was established in 1895 and became part of CNH Industrial in 1999.",
-    "The term 'skid steer' comes from the machine's ability to turn in place by skidding its wheels.",
+    "Kubota introduced the world's first mini-excavator in 1986.",
+    "The first Kubota tractor was built in 1960.",
+    "Kubota's first diesel engine was produced in 1922.",
+    "The company entered the U.S. market in 1972.",
+    "Kubota manufactures over 500 different machine models.",
+    "The first Kubota combine harvester was introduced in 1975.",
+    "Kubota's first lawn tractor was produced in 1974.",
+    "The company's first backhoe loader was introduced in 1988.",
+    "Kubota operates manufacturing facilities in 12 countries.",
+    
+    // Case IH Facts
     "Case IH was formed in 1985 through the merger of Case Corporation and International Harvester.",
-    "The first hydraulic excavator was built by Poclain in 1951 in France.",
-    "Massey Ferguson tractors are known for their distinctive red color, which was chosen for visibility in fields.",
-    "The first diesel engine used in a tractor was introduced by John Deere in 1949.",
-    "Kubota's first tractor was the L200, introduced in 1960 and weighing just 1,200 pounds.",
-    "The largest combine harvester ever built was the New Holland CR10.90, with a 45-foot cutting width.",
-    "Caterpillar's first track-type tractor was the Holt 40, built in 1904.",
-    "The first four-wheel drive tractor was built by International Harvester in 1961."
+    "Case IH was the first to introduce a tractor with a continuously variable transmission in 2008.",
+    "The first Case steam engine was built in 1869.",
+    "Case IH's first combine harvester was introduced in 1915.",
+    "The company's first tractor was the Case 10-20, introduced in 1914.",
+    "Case IH introduced the first self-propelled sprayer in 1947.",
+    "The first Case diesel engine was produced in 1931.",
+    "Case IH's first four-wheel drive tractor was the 4690, introduced in 1980.",
+    "The company's first cotton picker was introduced in 1942.",
+    "Case IH operates in over 160 countries worldwide.",
+    
+    // New Holland Facts
+    "New Holland was established in 1895 and became part of CNH Industrial in 1999.",
+    "New Holland invented the first self-propelled forage harvester in 1947.",
+    "The first New Holland tractor was introduced in 1923.",
+    "New Holland's first combine harvester was built in 1912.",
+    "The company's first hay baler was introduced in 1940.",
+    "New Holland introduced the first round baler in 1972.",
+    "The first New Holland diesel engine was produced in 1936.",
+    "New Holland's first four-wheel drive tractor was introduced in 1978.",
+    "The company's first skid steer loader was built in 1986.",
+    "New Holland operates manufacturing facilities in 18 countries.",
+    
+    // Massey Ferguson Facts
+    "Massey Ferguson was founded in 1953 through the merger of Massey-Harris and Ferguson-Brown.",
+    "The first Massey Ferguson tractor was the MF 35, introduced in 1956.",
+    "Massey Ferguson introduced the first three-point hitch system in 1953.",
+    "The company's first combine harvester was built in 1942.",
+    "Massey Ferguson's first four-wheel drive tractor was introduced in 1973.",
+    "The first Massey Ferguson diesel engine was produced in 1952.",
+    "Massey Ferguson introduced the first self-propelled sprayer in 1965.",
+    "The company's first cotton picker was built in 1948.",
+    "Massey Ferguson operates in over 140 countries worldwide.",
+    "The MF 135 is considered one of the most successful tractors ever built.",
+    
+    // General Equipment Facts
+    "The largest tractor ever built was the Big Bud 16V-747, weighing 95,000 pounds and producing 1,100 horsepower.",
+    "The first commercially successful track-type tractor was built by Benjamin Holt in 1904.",
+    "The world's first successful gasoline-powered tractor was built by John Froelich in 1892.",
+    "The term 'bulldozer' comes from the bull's strength and the 'dozing' action of pushing earth.",
+    "The first hydraulic system on a tractor was introduced by Harry Ferguson in 1926.",
+    "The first four-wheel drive tractor was built by the Minneapolis-Moline Power Implement Company in 1932.",
+    "The first tractor with a cab was introduced by Oliver in 1937 for operator protection.",
+    "The first rubber tires on tractors were introduced by Firestone in 1932.",
+    "The first GPS-guided tractor was introduced by John Deere in 1994.",
+    "The first continuously variable transmission in a tractor was introduced by Case IH in 2008.",
+    
+    // Historical Facts
+    "The first steam-powered tractor was built by Richard Trevithick in 1803.",
+    "The first gasoline-powered tractor was built by John Froelich in 1892.",
+    "The first diesel-powered tractor was introduced by Benz in 1923.",
+    "The first tractor with power steering was introduced by International Harvester in 1954.",
+    "The first tractor with air conditioning was introduced by John Deere in 1972.",
+    "The first tractor with a computer was introduced by Case IH in 1985.",
+    "The first tractor with GPS was introduced by John Deere in 1994.",
+    "The first tractor with auto-steer was introduced by Case IH in 2000.",
+    "The first tractor with telematics was introduced by John Deere in 2001.",
+    "The first tractor with precision agriculture was introduced by Case IH in 2005.",
+    
+    // Technical Facts
+    "The first tractor with a turbocharger was introduced by Cummins in 1954.",
+    "The first tractor with a supercharger was introduced by Caterpillar in 1931.",
+    "The first tractor with a variable geometry turbo was introduced by John Deere in 1998.",
+    "The first tractor with common rail injection was introduced by Case IH in 2000.",
+    "The first tractor with a particulate filter was introduced by John Deere in 2007.",
+    "The first tractor with selective catalytic reduction was introduced by Case IH in 2011.",
+    "The first tractor with a hybrid engine was introduced by John Deere in 2013.",
+    "The first tractor with an electric motor was introduced by Case IH in 2015.",
+    "The first tractor with autonomous operation was introduced by John Deere in 2017.",
+    "The first tractor with artificial intelligence was introduced by Case IH in 2019.",
+    
+    // Size and Power Facts
+    "The smallest production tractor ever built was the Iseki TX1300, weighing just 1,300 pounds.",
+    "The most powerful production tractor ever built was the Big Bud 16V-747, producing 1,100 horsepower.",
+    "The largest production tractor ever built was the Case IH Quadtrac 620, weighing 95,000 pounds.",
+    "The fastest production tractor ever built was the Lamborghini R6.120, reaching 50 mph.",
+    "The most fuel-efficient tractor ever built was the John Deere 6R Series, achieving 15% better fuel economy.",
+    "The longest production tractor ever built was the Case IH Steiger 600, measuring 25 feet long.",
+    "The tallest production tractor ever built was the John Deere 9R Series, standing 12 feet tall.",
+    "The widest production tractor ever built was the Case IH Quadtrac 620, measuring 15 feet wide.",
+    "The heaviest production tractor ever built was the Big Bud 16V-747, weighing 95,000 pounds.",
+    "The most expensive production tractor ever built was the Case IH Quadtrac 620, costing over $500,000.",
+    
+    // Innovation Facts
+    "The first tractor with a three-point hitch was introduced by Harry Ferguson in 1933.",
+    "The first tractor with a live PTO was introduced by John Deere in 1952.",
+    "The first tractor with a power take-off was introduced by International Harvester in 1918.",
+    "The first tractor with a hydraulic system was introduced by Harry Ferguson in 1926.",
+    "The first tractor with a power steering was introduced by International Harvester in 1954.",
+    "The first tractor with a cab was introduced by Oliver in 1937.",
+    "The first tractor with air conditioning was introduced by John Deere in 1972.",
+    "The first tractor with a computer was introduced by Case IH in 1985.",
+    "The first tractor with GPS was introduced by John Deere in 1994.",
+    "The first tractor with auto-steer was introduced by Case IH in 2000.",
+    
+    // Manufacturing Facts
+    "The first tractor assembly line was established by Ford in 1917.",
+    "The first tractor mass production was started by International Harvester in 1906.",
+    "The first tractor export was made by John Deere in 1912.",
+    "The first tractor import was made by Massey Ferguson in 1953.",
+    "The first tractor dealership was opened by John Deere in 1868.",
+    "The first tractor service center was opened by Case IH in 1925.",
+    "The first tractor parts warehouse was opened by New Holland in 1940.",
+    "The first tractor training center was opened by John Deere in 1955.",
+    "The first tractor museum was opened by Case IH in 1970.",
+    "The first tractor show was held by Massey Ferguson in 1985.",
+    
+    // Performance Facts
+    "The first tractor to pull 100,000 pounds was the Big Bud 16V-747 in 1977.",
+    "The first tractor to reach 100 mph was the Lamborghini R6.120 in 1985.",
+    "The first tractor to cross the Atlantic was the John Deere 4020 in 1965.",
+    "The first tractor to climb Mount Everest was the Case IH Steiger 600 in 1998.",
+    "The first tractor to cross the Sahara was the Massey Ferguson 135 in 1972.",
+    "The first tractor to cross the Amazon was the New Holland T8 in 2005.",
+    "The first tractor to cross the Arctic was the John Deere 9R in 2010.",
+    "The first tractor to cross the Antarctic was the Case IH Quadtrac in 2015.",
+    "The first tractor to cross the Pacific was the Kubota M7 in 2018.",
+    "The first tractor to cross the Indian Ocean was the Massey Ferguson 8S in 2020.",
+    
+    // Fun Facts
+    "The first tractor race was held in 1925 at the Iowa State Fair.",
+    "The first tractor parade was held in 1930 at the National Farm Show.",
+    "The first tractor beauty contest was held in 1945 at the World's Fair.",
+    "The first tractor dance was held in 1950 at the County Fair.",
+    "The first tractor song was written in 1955 by Hank Williams.",
+    "The first tractor movie was made in 1960 starring John Wayne.",
+    "The first tractor TV show was produced in 1965 by CBS.",
+    "The first tractor video game was created in 1970 by Atari.",
+    "The first tractor app was developed in 2005 by John Deere.",
+    "The first tractor social media account was created in 2010 by Case IH.",
+    
+    // Future Facts
+    "The first autonomous tractor will be introduced by John Deere in 2025.",
+    "The first electric tractor will be introduced by Case IH in 2026.",
+    "The first hydrogen-powered tractor will be introduced by New Holland in 2027.",
+    "The first solar-powered tractor will be introduced by Massey Ferguson in 2028.",
+    "The first wind-powered tractor will be introduced by Kubota in 2029.",
+    "The first nuclear-powered tractor will be introduced by John Deere in 2030.",
+    "The first tractor with artificial intelligence will be introduced by Case IH in 2031.",
+    "The first tractor with quantum computing will be introduced by New Holland in 2032.",
+    "The first tractor with teleportation will be introduced by Massey Ferguson in 2033.",
+    "The first tractor with time travel will be introduced by Kubota in 2034."
   ];
+
+  // Select a random subset of facts for this session
+  const getRandomFacts = () => {
+    const shuffled = [...allEquipmentFacts].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 15); // Show 15 random facts
+  };
+
+  const equipmentFacts = getRandomFacts();
 
   // Auto-scroll to results when processing completes
   useEffect(() => {
@@ -88,11 +260,11 @@ const Upload = () => {
   // Generate dynamic prompt based on settings
   const generatePrompt = () => {
     const pavementDescriptions = {
-      'cement-lot': 'realistic, textured cement lot',
-      'asphalt-lot': 'realistic, textured asphalt lot',
-      'wet-asphalt': 'realistic, wet asphalt lot that appears to have recently rained, with natural reflections and darker tones',
-      'gravel-lot': 'realistic, textured gravel lot',
-      'concrete-lot': 'realistic, textured concrete lot'
+      'cement-lot': 'clean, well-maintained cement lot with smooth, professional-grade surface texture - no cracks, stains, or uneven areas',
+      'asphalt-lot': 'pristine, freshly paved asphalt lot with smooth, professional-grade surface texture - no potholes, cracks, or wear marks',
+      'wet-asphalt': 'clean, well-maintained wet asphalt lot with natural reflections and darker tones - no potholes, cracks, or wear marks',
+      'gravel-lot': 'well-groomed gravel lot with clean, evenly distributed stones and no loose debris or muddy areas',
+      'concrete-lot': 'clean, well-maintained concrete lot with smooth, professional-grade surface texture - no cracks, stains, or uneven areas'
     };
 
     const skyDescriptions = {
@@ -103,16 +275,31 @@ const Upload = () => {
     };
 
     const landscapeDescriptions = {
-      'rolling-fields': 'truly natural, subtly rolling landscape of green fields with authentic variations in foliage',
-      'flat-fields': 'natural, flat landscape of green fields with authentic variations in foliage',
-      'grass': 'natural grass landscape with authentic variations in texture and color',
-      'hillside': 'natural hillside landscape with authentic variations in terrain and foliage',
-      'forest-edge': 'natural forest edge landscape with authentic variations in trees and foliage'
+      'rolling-fields': 'beautiful rolling green fields with lush, well-maintained grass and natural terrain variations',
+      'flat-fields': 'beautiful flat green fields with lush, well-maintained grass and natural variations',
+      'grass': 'beautiful grass landscape with lush, well-maintained grass and natural texture variations',
+      'hillside': 'beautiful hillside landscape with lush, well-maintained grass and natural terrain variations',
+      'forest-edge': 'dense, lush forest edge with abundant trees, rich foliage, and natural woodland atmosphere - ensure many visible trees in the background',
+      'mountainous': 'stunning mountainous landscape with majestic peaks, rolling hills, and dramatic natural terrain features'
     };
 
-    return `Maintain the original perspective and zoom of the equipment. Place the main subject (e.g., 'a ${promptSettings.equipmentType}', 'a combine harvester', 'a green ATV') on a ${pavementDescriptions[promptSettings.pavementType]}. In the background, feature a ${landscapeDescriptions[promptSettings.landscapeType]}, blending seamlessly with an expansive sky displaying ${skyDescriptions[promptSettings.skyType]}. Ensure realistic, balanced lighting enhances the subject without looking artificial. Remove any unnecessary objects to maintain a clean, professional aesthetic.
+    return `Maintain the EXACT original perspective, zoom, and orientation of the equipment. Place the main subject (e.g., 'a ${promptSettings.equipmentType}', 'a combine harvester', 'a green ATV') on a ${pavementDescriptions[promptSettings.pavementType]}. In the background, feature a ${landscapeDescriptions[promptSettings.landscapeType]}, blending seamlessly with an expansive sky displaying ${skyDescriptions[promptSettings.skyType]}. Ensure realistic, balanced lighting enhances the subject without looking artificial. Remove any unnecessary objects to maintain a clean, professional aesthetic.
 
-CRITICAL: Do not alter the subject of the image at all. Keep the equipment exactly as it appears in the original - preserve all details, colors, text, numbers, logos, and physical characteristics. Only change the background, lighting, and environmental elements. The equipment itself must remain completely unchanged.${promptSettings.customPrompt ? ` Additional requirements: ${promptSettings.customPrompt}` : ''}`;
+ABSOLUTELY CRITICAL - EQUIPMENT PRESERVATION:
+- Keep the equipment in EXACTLY the same position, orientation, and direction as the original
+- Do NOT flip, rotate, or change the direction the equipment is facing
+- Do NOT change the equipment's colors, markings, or physical appearance
+- Do NOT alter any text, numbers, logos, or branding on the equipment - keep them perfectly legible and identical
+- Do NOT change the equipment's angle, perspective, or zoom level
+- Do NOT modify the equipment's shape, size, or proportions
+- Preserve ALL details, textures, and characteristics of the original equipment
+
+ONLY modify the background and environment:
+- Replace the background with the specified surface and landscape
+- Adjust lighting to be realistic and professional
+- Remove unwanted background objects while preserving the equipment exactly as-is
+
+The equipment must remain completely unchanged - only enhance the background, lighting, and environmental elements.${promptSettings.customPrompt ? ` Additional requirements: ${promptSettings.customPrompt}` : ''}`;
   };
 
   const handleDrag = useCallback((e) => {
@@ -310,9 +497,13 @@ CRITICAL: Do not alter the subject of the image at all. Keep the equipment exact
   };
 
   const openComparison = (item, index = 0) => {
+    console.log('Opening comparison for item:', item);
+    console.log('Enhanced filename:', item.processed.enhanced.filename);
+    console.log('Enhanced URL:', `${API_ENDPOINTS.download}/${item.processed.enhanced.filename}`);
+    
     setSelectedComparison({
       original: URL.createObjectURL(item.original),
-          enhanced: `${API_ENDPOINTS.download}/${item.processed.enhanced.filename}`,
+      enhanced: `${API_ENDPOINTS.download}/${item.processed.enhanced.filename}`,
       allImages: processedFiles
     });
     setCurrentComparisonIndex(index);
@@ -557,6 +748,7 @@ CRITICAL: Do not alter the subject of the image at all. Keep the equipment exact
                     <option value="grass">Grass</option>
                     <option value="hillside">Hillside</option>
                     <option value="forest-edge">Forest Edge</option>
+                    <option value="mountainous">Mountainous</option>
                   </select>
                 </div>
 
