@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Camera, Menu, X, User, LogOut, BarChart3, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { Camera, Menu, X, User, LogOut, BarChart3, Sparkles } from 'lucide-react';
 
 const Header = ({ showLoginModal, setShowLoginModal, showAdminDashboard, setShowAdminDashboard }) => {
   const location = useLocation();
@@ -117,11 +117,6 @@ const Header = ({ showLoginModal, setShowLoginModal, showAdminDashboard, setShow
                   </div>
                 )}
                 
-                {/* User Stats - Show trial images used for consistency */}
-                <div className="hidden md:flex items-center space-x-2 bg-gray-50 text-gray-700 px-3 py-1 rounded-full text-xs">
-                  <ImageIcon className="h-3 w-3" />
-                  <span>{trialStatus?.trialInfo?.imagesUsed || user.imagesProcessedCount || 0} processed</span>
-                </div>
 
                 {/* User Email */}
                 <div className="hidden sm:flex items-center space-x-2 text-sm text-gray-700">
@@ -236,10 +231,6 @@ const Header = ({ showLoginModal, setShowLoginModal, showAdminDashboard, setShow
                   </div>
                 )}
                 
-                <div className="flex items-center space-x-2 bg-gray-50 text-gray-700 px-3 py-2 rounded-md text-xs">
-                  <ImageIcon className="h-3 w-3" />
-                  <span>{trialStatus?.trialInfo?.imagesUsed || user.imagesProcessedCount || 0} images processed</span>
-                </div>
 
                 {user.isAdmin && (
                   <button
