@@ -72,6 +72,7 @@ const PORT = process.env.PORT || 5001;
 // Debug port configuration
 console.log('Environment PORT:', process.env.PORT);
 console.log('Using PORT:', PORT);
+console.log('Render should auto-assign PORT if not set');
 
 // Initialize Google AI service
 const googleAI = new GoogleAIService();
