@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Upload as UploadIcon, Download, Eye, Edit3, History, Clock, Image as ImageIcon } from 'lucide-react';
+import { Upload as UploadIcon, Download, Eye, Edit3, History, Clock, Image as ImageIcon, User } from 'lucide-react';
 import ImageComparison from '../components/ImageComparison';
 import { API_ENDPOINTS } from '../config/api';
 
