@@ -654,7 +654,8 @@ The equipment must remain completely unchanged - only enhance the background, li
                 <UploadIcon className="h-5 w-5 inline mr-2" />
                 Upload & Process
               </button>
-              <button
+              {/* History tab temporarily hidden */}
+              {/* <button
                 onClick={() => setActiveTab('history')}
                 className={`py-2 px-1 border-b-2 font-medium text-sm ${
                   activeTab === 'history'
@@ -664,7 +665,7 @@ The equipment must remain completely unchanged - only enhance the background, li
               >
                 <History className="h-5 w-5 inline mr-2" />
                 History ({history.length})
-              </button>
+              </button> */}
             </nav>
           </div>
         </div>
@@ -1113,7 +1114,8 @@ The equipment must remain completely unchanged - only enhance the background, li
           </div>
         )}
 
-        {activeTab === 'history' && (
+        {/* History tab content temporarily hidden */}
+        {/* {activeTab === 'history' && (
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm border p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
@@ -1193,7 +1195,7 @@ The equipment must remain completely unchanged - only enhance the background, li
               )}
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Image Comparison Modal */}
         {selectedComparison && (

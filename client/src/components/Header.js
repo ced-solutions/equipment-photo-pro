@@ -102,12 +102,12 @@ const Header = ({ showLoginModal, setShowLoginModal, showAdminDashboard, setShow
               // User is logged in - show account info
               <div className="flex items-center space-x-3">
                 {/* Trial Status Badge */}
-                {trialStatus && (
+                {trialStatus && trialStatus.trialInfo && (
                   <div className="hidden sm:flex items-center space-x-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs">
                     <Sparkles className="h-3 w-3" />
                     <span>
                       {trialStatus.canProcess ? 
-                        `Trial: ${trialStatus.imagesUsed}/${trialStatus.trialLimit} images, ${trialStatus.daysRemaining} days` :
+                        `Trial: ${trialStatus.trialInfo.imagesUsed}/30 images, ${trialStatus.trialInfo.daysRemaining} days` :
                         'Trial expired'
                       }
                     </span>
@@ -221,12 +221,12 @@ const Header = ({ showLoginModal, setShowLoginModal, showAdminDashboard, setShow
                   <span>{user.email}</span>
                 </div>
                 
-                {trialStatus && (
+                {trialStatus && trialStatus.trialInfo && (
                   <div className="flex items-center space-x-2 bg-blue-50 text-blue-700 px-3 py-2 rounded-md text-xs">
                     <Sparkles className="h-3 w-3" />
                     <span>
                       {trialStatus.canProcess ? 
-                        `Trial: ${trialStatus.imagesUsed}/${trialStatus.trialLimit} images, ${trialStatus.daysRemaining} days` :
+                        `Trial: ${trialStatus.trialInfo.imagesUsed}/30 images, ${trialStatus.trialInfo.daysRemaining} days` :
                         'Trial expired'
                       }
                     </span>
