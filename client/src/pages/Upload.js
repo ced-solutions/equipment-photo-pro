@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Upload as UploadIcon, Download, Eye, Edit3, History, Clock, Image as ImageIcon } from 'lucide-react';
+import { Upload as UploadIcon, Download, Eye, Edit3, History, Clock, Image as ImageIcon, LogOut, User, BarChart3 } from 'lucide-react';
 import ImageComparison from '../components/ImageComparison';
+import LoginModal from '../components/LoginModal';
+import AdminDashboard from '../components/AdminDashboard';
 import { API_ENDPOINTS } from '../config/api';
 
 const Upload = () => {
@@ -16,6 +18,11 @@ const Upload = () => {
   const [history, setHistory] = useState([]);
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
   const [currentFactIndex, setCurrentFactIndex] = useState(0);
+  
+  // Authentication state
+  const [user, setUser] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [promptSettings, setPromptSettings] = useState({
     skyType: 'subtle-clouds',
     pavementType: 'cement-lot',
@@ -34,7 +41,31 @@ const Upload = () => {
         console.error('Error loading history from localStorage:', error);
       }
     }
+    
+    // Check for existing authentication
+    const savedUser = localStorage.getItem('user');
+    const savedToken = localStorage.getItem('sessionToken');
+    if (savedUser && savedToken) {
+      setUser(JSON.parse(savedUser));
+    }
   }, []);
+
+  // Authentication functions
+  const handleLoginSuccess = (userData) => {
+    setUser(userData);
+    setShowLoginModal(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('sessionToken');
+    setUser(null);
+  };
+
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('sessionToken');
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+  };
 
   // Save history to localStorage whenever it changes
   useEffect(() => {
@@ -341,6 +372,12 @@ The equipment must remain completely unchanged - only enhance the background, li
   const processImages = async () => {
     if (files.length === 0) return;
 
+    // Check if user is logged in
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
+
     setProcessing(true);
     setProcessedFiles([]);
     
@@ -407,6 +444,7 @@ The equipment must remain completely unchanged - only enhance the background, li
         // Make the actual API call
         const response = await fetch(API_ENDPOINTS.upload, {
           method: 'POST',
+          headers: getAuthHeaders(),
           body: singleFileFormData,
         });
 
@@ -546,6 +584,46 @@ The equipment must remain completely unchanged - only enhance the background, li
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Authentication Header */}
+        <div className="flex justify-between items-center mb-6">
+          <div></div>
+          <div className="flex items-center space-x-4">
+            {user ? (
+              <>
+                <div className="flex items-center space-x-2">
+                  <User className="h-5 w-5 text-gray-600" />
+                  <span className="text-sm text-gray-700">{user.email}</span>
+                  <span className="text-xs text-gray-500">({user.imagesProcessedCount} processed)</span>
+                </div>
+                {user.isAdmin && (
+                  <button
+                    onClick={() => setShowAdminDashboard(true)}
+                    className="flex items-center space-x-1 px-3 py-1 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors"
+                  >
+                    <BarChart3 className="h-4 w-4" />
+                    <span className="text-sm">Admin</span>
+                  </button>
+                )}
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center space-x-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span className="text-sm">Logout</span>
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setShowLoginModal(true)}
+                className="flex items-center space-x-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <User className="h-4 w-4" />
+                <span>Sign In</span>
+              </button>
+            )}
+          </div>
+        </div>
+
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Upload & Process Equipment Photos
@@ -1106,6 +1184,18 @@ The equipment must remain completely unchanged - only enhance the background, li
           />
         )}
       </div>
+      
+      {/* Authentication Modals */}
+      <LoginModal 
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
+      
+      <AdminDashboard 
+        isOpen={showAdminDashboard}
+        onClose={() => setShowAdminDashboard(false)}
+      />
     </div>
   );
 };

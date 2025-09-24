@@ -6,8 +6,13 @@ const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
 const GoogleAIService = require('./services/googleAI');
+const AuthService = require('./services/authService');
 
 const app = express();
+
+// Initialize auth service
+const authService = new AuthService();
+authService.init().catch(console.error);
 
 // Function to add watermark to processed images
 const addWatermark = async (imagePath) => {
@@ -277,6 +282,74 @@ const enhanceImage = async (inputPath, outputPath, settings, prompt) => {
   return aiEnhancements;
 };
 
+// Authentication Routes
+app.post('/api/auth/send-code', async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    const result = await authService.sendLoginCode(email);
+    res.json(result);
+  } catch (error) {
+    console.error('Error sending login code:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.post('/api/auth/verify-code', async (req, res) => {
+  try {
+    const { email, code } = req.body;
+    
+    if (!email || !code) {
+      return res.status(400).json({ error: 'Email and code are required' });
+    }
+
+    const result = await authService.verifyLoginCode(email, code);
+    res.json(result);
+  } catch (error) {
+    console.error('Error verifying login code:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.post('/api/auth/logout', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const sessionToken = authHeader.substring(7);
+      await authService.logout(sessionToken);
+    }
+    res.json({ success: true, message: 'Logged out successfully' });
+  } catch (error) {
+    console.error('Error logging out:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/api/auth/me', authService.requireAuth.bind(authService), async (req, res) => {
+  try {
+    const stats = await authService.getUserStats(req.user.id);
+    res.json(stats);
+  } catch (error) {
+    console.error('Error getting user info:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Admin Routes
+app.get('/api/admin/stats', authService.requireAdmin.bind(authService), async (req, res) => {
+  try {
+    const stats = await authService.getAdminStats();
+    res.json(stats);
+  } catch (error) {
+    console.error('Error getting admin stats:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
 // Routes
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Equipment Photo Pro API is running' });
@@ -414,7 +487,7 @@ app.post('/api/ai-suggestions', upload.single('image'), async (req, res) => {
 });
 
 // Upload and process images
-app.post('/api/upload', upload.array('images', 10), async (req, res) => {
+app.post('/api/upload', authService.requireAuth.bind(authService), upload.array('images', 10), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: 'No images uploaded' });
@@ -465,6 +538,14 @@ CRITICAL: Do not alter the subject of the image at all. Keep the equipment exact
         }
         
         console.log('Returning enhanced filename to frontend:', enhancedFilename);
+        
+        // Track image processing for user
+        await authService.trackImageProcessing(
+          req.user.id, 
+          file.filename, 
+          file.size, 
+          60000 // Approximate processing time in milliseconds
+        );
         
         processedFiles.push({
           original: {
