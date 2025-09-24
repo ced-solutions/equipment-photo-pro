@@ -23,6 +23,7 @@ const Upload = () => {
   const [user, setUser] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
+  const [trialStatus, setTrialStatus] = useState(null);
   const [promptSettings, setPromptSettings] = useState({
     skyType: 'subtle-clouds',
     pavementType: 'cement-lot',
@@ -54,6 +55,8 @@ const Upload = () => {
   const handleLoginSuccess = (userData) => {
     setUser(userData);
     setShowLoginModal(false);
+    // Fetch trial status after login
+    setTimeout(() => fetchTrialStatus(), 500);
   };
 
   const handleLogout = () => {
@@ -67,10 +70,40 @@ const Upload = () => {
     return token ? { 'Authorization': `Bearer ${token}` } : {};
   };
 
+  const fetchTrialStatus = async () => {
+    if (!user) return;
+    
+    try {
+      const API_BASE_URL = process.env.NODE_ENV === 'production' 
+        ? 'https://equipment-photo-pro.onrender.com'
+        : 'http://localhost:5001';
+        
+      const response = await fetch(`${API_BASE_URL}/api/auth/trial-status`, {
+        headers: getAuthHeaders(),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setTrialStatus(data);
+      }
+    } catch (error) {
+      console.error('Error fetching trial status:', error);
+    }
+  };
+
   // Save history to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('equipmentPhotoHistory', JSON.stringify(history));
   }, [history]);
+
+  // Fetch trial status when user changes
+  useEffect(() => {
+    if (user) {
+      fetchTrialStatus();
+    } else {
+      setTrialStatus(null);
+    }
+  }, [user]);
 
   // Equipment facts for display during processing - 200+ facts
   const allEquipmentFacts = [
@@ -336,17 +369,24 @@ The equipment must remain completely unchanged - only enhance the background, li
   const handleDrag = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!user) return; // Don't allow drag when not logged in
+    
     if (e.type === "dragenter" || e.type === "dragover") {
       setDragActive(true);
     } else if (e.type === "dragleave") {
       setDragActive(false);
     }
-  }, []);
+  }, [user]);
 
   const handleDrop = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
+    
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
     
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const newFiles = Array.from(e.dataTransfer.files).filter(file => 
@@ -354,9 +394,14 @@ The equipment must remain completely unchanged - only enhance the background, li
       );
       setFiles(prev => [...prev, ...newFiles]);
     }
-  }, []);
+  }, [user]);
 
   const handleFileInput = (e) => {
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
+    
     if (e.target.files && e.target.files[0]) {
       const newFiles = Array.from(e.target.files).filter(file => 
         file.type.startsWith('image/')
@@ -375,6 +420,12 @@ The equipment must remain completely unchanged - only enhance the background, li
     // Check if user is logged in
     if (!user) {
       setShowLoginModal(true);
+      return;
+    }
+
+    // Check trial limits
+    if (trialStatus && !trialStatus.canProcess) {
+      alert(`Cannot process images: ${trialStatus.reason}`);
       return;
     }
 
@@ -594,6 +645,11 @@ The equipment must remain completely unchanged - only enhance the background, li
                   <User className="h-5 w-5 text-gray-600" />
                   <span className="text-sm text-gray-700">{user.email}</span>
                   <span className="text-xs text-gray-500">({user.imagesProcessedCount} processed)</span>
+                  {trialStatus && trialStatus.trialInfo && (
+                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                      Trial: {trialStatus.trialInfo.imagesRemaining || 0} images, {trialStatus.trialInfo.daysRemaining || 0} days left
+                    </span>
+                  )}
                 </div>
                 {user.isAdmin && (
                   <button
@@ -675,17 +731,18 @@ The equipment must remain completely unchanged - only enhance the background, li
               <div className="bg-white rounded-lg shadow-sm border p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Upload Photos</h2>
                 
-                <div
-                  className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                    dragActive 
-                      ? 'border-primary-500 bg-primary-50' 
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
-                  onDragEnter={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDragOver={handleDrag}
-                  onDrop={handleDrop}
-                >
+                <div className="relative">
+                  <div
+                    className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                      dragActive 
+                        ? 'border-primary-500 bg-primary-50' 
+                        : 'border-gray-300 hover:border-gray-400'
+                    } ${!user ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    onDragEnter={handleDrag}
+                    onDragLeave={handleDrag}
+                    onDragOver={handleDrag}
+                    onDrop={handleDrop}
+                  >
                   <UploadIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                   <p className="text-lg text-gray-600 mb-2">
                     Drag and drop your equipment photos here
@@ -707,6 +764,25 @@ The equipment must remain completely unchanged - only enhance the background, li
                   >
                     Choose Files
                   </label>
+                  
+                  {/* Login Overlay */}
+                  {!user && (
+                    <div className="absolute inset-0 bg-white bg-opacity-90 rounded-lg flex items-center justify-center">
+                      <div className="text-center">
+                        <User className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                        <p className="text-lg text-gray-600 mb-2">
+                          Sign in required to upload
+                        </p>
+                        <button
+                          onClick={() => setShowLoginModal(true)}
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
+                        >
+                          Sign In to Continue
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
                 </div>
 
                 {files.length > 0 && (
@@ -859,14 +935,18 @@ The equipment must remain completely unchanged - only enhance the background, li
             <div className="text-center">
               <button
                 onClick={processImages}
-                disabled={files.length === 0 || processing}
+                disabled={files.length === 0 || processing || !user || (trialStatus && !trialStatus.canProcess)}
                 className={`px-8 py-3 rounded-lg font-medium text-lg transition-colors ${
-                  files.length === 0 || processing
+                  files.length === 0 || processing || !user || (trialStatus && !trialStatus.canProcess)
                     ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
                     : 'bg-primary-600 text-white hover:bg-primary-700'
                 }`}
               >
-                {processing ? (
+                {!user ? (
+                  'Sign In Required to Process'
+                ) : trialStatus && !trialStatus.canProcess ? (
+                  `Trial ${trialStatus.reason}`
+                ) : processing ? (
                   <div className="flex items-center">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                     Processing Images...

@@ -209,9 +209,77 @@ class AuthService {
     }
   }
 
+  // Check if user can process images (trial limits)
+  async canProcessImages(userId) {
+    try {
+      const trialInfo = await this.db.checkTrialLimits(userId);
+      if (!trialInfo) {
+        return { canProcess: false, reason: 'User not found' };
+      }
+
+      // Admins can always process
+      if (trialInfo.is_admin) {
+        return { canProcess: true, reason: 'Admin user' };
+      }
+
+      // Check subscription status
+      if (trialInfo.subscription_status === 'active') {
+        return { canProcess: true, reason: 'Active subscription' };
+      }
+
+      // Check trial limits
+      const trialStartDate = new Date(trialInfo.trial_started_at);
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      
+      // Check 30-day trial limit
+      if (trialStartDate < thirtyDaysAgo) {
+        return { 
+          canProcess: false, 
+          reason: 'Trial expired',
+          trialInfo: {
+            daysUsed: Math.floor((Date.now() - trialStartDate.getTime()) / (24 * 60 * 60 * 1000)),
+            imagesUsed: trialInfo.trial_images_used
+          }
+        };
+      }
+
+      // Check 30-image trial limit
+      if (trialInfo.trial_images_used >= 30) {
+        return { 
+          canProcess: false, 
+          reason: 'Image limit reached',
+          trialInfo: {
+            daysUsed: Math.floor((Date.now() - trialStartDate.getTime()) / (24 * 60 * 60 * 1000)),
+            imagesUsed: trialInfo.trial_images_used
+          }
+        };
+      }
+
+      return { 
+        canProcess: true, 
+        reason: 'Within trial limits',
+        trialInfo: {
+          daysUsed: Math.floor((Date.now() - trialStartDate.getTime()) / (24 * 60 * 60 * 1000)),
+          imagesUsed: trialInfo.trial_images_used,
+          imagesRemaining: 30 - trialInfo.trial_images_used,
+          daysRemaining: 30 - Math.floor((Date.now() - trialStartDate.getTime()) / (24 * 60 * 60 * 1000))
+        }
+      };
+    } catch (error) {
+      console.error('Error checking trial limits:', error);
+      return { canProcess: false, reason: 'Error checking limits' };
+    }
+  }
+
   // Track image processing
   async trackImageProcessing(userId, filename, originalSize, processingTime) {
     try {
+      // Check if user can still process images
+      const canProcess = await this.canProcessImages(userId);
+      if (!canProcess.canProcess) {
+        throw new Error(`Cannot process image: ${canProcess.reason}`);
+      }
+
       // Add to processing history
       await this.db.addProcessingRecord(userId, filename, originalSize, processingTime);
       
@@ -230,6 +298,7 @@ class AuthService {
     try {
       const user = await this.db.getUserById(userId);
       const processingHistory = await this.db.getProcessingHistory(userId, 20);
+      const trialStatus = await this.canProcessImages(userId);
       
       return {
         user: {
@@ -237,8 +306,11 @@ class AuthService {
           email: user.email,
           imagesProcessedCount: user.images_processed_count,
           createdAt: user.created_at,
-          lastLogin: user.last_login
+          lastLogin: user.last_login,
+          isAdmin: user.is_admin,
+          subscriptionStatus: user.subscription_status
         },
+        trialStatus,
         recentProcessing: processingHistory
       };
     } catch (error) {

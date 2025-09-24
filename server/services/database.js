@@ -38,7 +38,10 @@ class DatabaseService {
         last_login DATETIME,
         images_processed_count INTEGER DEFAULT 0,
         is_admin BOOLEAN DEFAULT FALSE,
-        status VARCHAR(20) DEFAULT 'active'
+        status VARCHAR(20) DEFAULT 'active',
+        trial_started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        trial_images_used INTEGER DEFAULT 0,
+        subscription_status VARCHAR(20) DEFAULT 'trial'
       );
 
       -- Sessions table for authentication
@@ -150,8 +153,43 @@ class DatabaseService {
 
   async incrementImageCount(userId) {
     return new Promise((resolve, reject) => {
-      const sql = 'UPDATE users SET images_processed_count = images_processed_count + 1 WHERE id = ?';
+      const sql = 'UPDATE users SET images_processed_count = images_processed_count + 1, trial_images_used = trial_images_used + 1 WHERE id = ?';
       this.db.run(sql, [userId], (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  async checkTrialLimits(userId) {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        SELECT 
+          trial_started_at, 
+          trial_images_used, 
+          subscription_status,
+          is_admin,
+          created_at
+        FROM users 
+        WHERE id = ?
+      `;
+      this.db.get(sql, [userId], (err, row) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(row);
+        }
+      });
+    });
+  }
+
+  async updateSubscriptionStatus(userId, status) {
+    return new Promise((resolve, reject) => {
+      const sql = 'UPDATE users SET subscription_status = ? WHERE id = ?';
+      this.db.run(sql, [status, userId], (err) => {
         if (err) {
           reject(err);
         } else {

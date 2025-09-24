@@ -339,6 +339,16 @@ app.get('/api/auth/me', authService.requireAuth.bind(authService), async (req, r
   }
 });
 
+app.get('/api/auth/trial-status', authService.requireAuth.bind(authService), async (req, res) => {
+  try {
+    const trialStatus = await authService.canProcessImages(req.user.id);
+    res.json(trialStatus);
+  } catch (error) {
+    console.error('Error getting trial status:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
 // Admin Routes
 app.get('/api/admin/stats', authService.requireAdmin.bind(authService), async (req, res) => {
   try {
