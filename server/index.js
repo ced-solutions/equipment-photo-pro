@@ -69,6 +69,10 @@ const addWatermark = async (imagePath) => {
 };
 const PORT = process.env.PORT || 5001;
 
+// Debug port configuration
+console.log('Environment PORT:', process.env.PORT);
+console.log('Using PORT:', PORT);
+
 // Initialize Google AI service
 const googleAI = new GoogleAIService();
 
@@ -521,7 +525,9 @@ setInterval(() => {
   });
 }, 60 * 60 * 1000);
 
-app.listen(PORT, () => {
-  console.log(`🚀 Equipment Photo Pro server running on port ${PORT}`);
+const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 Equipment Photo Pro server running on ${HOST}:${PORT}`);
   console.log(`📁 Uploads directory: ${uploadsDir}`);
 });
