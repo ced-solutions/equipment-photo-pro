@@ -131,6 +131,88 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Before/After Examples Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              See the Difference
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Transform cluttered, distracting photos into clean, professional thumbnails that attract more buyers
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Before Image */}
+            <div className="text-center">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Before</h3>
+              <div className="relative">
+                <img 
+                  src="/before-example.jpg" 
+                  alt="Equipment photo before enhancement - cluttered background with distracting objects"
+                  className="w-full h-64 object-cover rounded-lg shadow-lg border-4 border-red-200"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+                <div className="hidden w-full h-64 bg-gray-200 rounded-lg shadow-lg border-4 border-red-200 items-center justify-center">
+                  <div className="text-center text-gray-500">
+                    <div className="text-4xl mb-2">📷</div>
+                    <div className="text-sm">Before Example</div>
+                    <div className="text-xs">Upload before-example.jpg</div>
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 mt-3 max-w-sm mx-auto">
+                Cluttered background with distracting objects, poor lighting, and messy surroundings
+              </p>
+            </div>
+
+            {/* After Image */}
+            <div className="text-center">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">After</h3>
+              <div className="relative">
+                <img 
+                  src="/after-example.jpg" 
+                  alt="Equipment photo after enhancement - clean professional background"
+                  className="w-full h-64 object-cover rounded-lg shadow-lg border-4 border-green-200"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+                <div className="hidden w-full h-64 bg-gray-200 rounded-lg shadow-lg border-4 border-green-200 items-center justify-center">
+                  <div className="text-center text-gray-500">
+                    <div className="text-4xl mb-2">✨</div>
+                    <div className="text-sm">After Example</div>
+                    <div className="text-xs">Upload after-example.jpg</div>
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 mt-3 max-w-sm mx-auto">
+                Clean professional background, enhanced lighting, and equipment as the clear focal point
+              </p>
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
+            <div className="inline-flex items-center space-x-4 bg-blue-50 px-6 py-3 rounded-full">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                <span className="text-sm font-medium text-gray-700">Before: Cluttered & Distracting</span>
+              </div>
+              <div className="text-gray-400">→</div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span className="text-sm font-medium text-gray-700">After: Clean & Professional</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 bg-primary-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
