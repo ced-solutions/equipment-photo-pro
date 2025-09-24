@@ -33,15 +33,16 @@ class AuthService {
       const code = this.emailService.generateVerificationCode();
       console.log(`🔢 Generated code: ${code}`);
       
-      // Set expiration time (10 minutes from now)
+      // Set expiration time (10 minutes from now) - store as ISO string for SQLite
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
-      console.log(`⏰ Code expires at: ${expiresAt.toISOString()}`);
+      const expiresAtISO = expiresAt.toISOString();
+      console.log(`⏰ Code expires at: ${expiresAtISO}`);
 
       const normalizedEmail = email.toLowerCase();
       console.log(`📧 Normalized email: ${normalizedEmail}`);
 
-      // Store the code in database
-      await this.db.createAuthCode(normalizedEmail, code, expiresAt);
+      // Store the code in database with ISO string
+      await this.db.createAuthCode(normalizedEmail, code, expiresAtISO);
       console.log('💾 Code stored in database');
 
       // Send email

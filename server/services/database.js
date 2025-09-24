@@ -264,10 +264,13 @@ class DatabaseService {
     
     return new Promise((resolve, reject) => {
       const sql = 'INSERT INTO auth_codes (email, code, expires_at) VALUES (?, ?, ?)';
-      this.db.run(sql, [email, code, expiresAt], (err) => {
+      console.log(`💾 Storing auth code - email: ${email}, code: ${code}, expires: ${expiresAt}`);
+      this.db.run(sql, [email, code, expiresAt], function(err) {
         if (err) {
+          console.log('❌ Error storing auth code:', err);
           reject(err);
         } else {
+          console.log(`✅ Auth code stored with ID: ${this.lastID}`);
           resolve();
         }
       });
@@ -276,19 +279,21 @@ class DatabaseService {
 
   async validateAuthCode(email, code) {
     return new Promise((resolve, reject) => {
+      const currentTime = new Date().toISOString();
       const sql = `
         SELECT * FROM auth_codes 
-        WHERE email = ? AND code = ? AND expires_at > datetime('now') AND used = FALSE
+        WHERE email = ? AND code = ? AND expires_at > ? AND used = FALSE
       `;
       console.log(`🔍 Database validation - email: ${email}, code: ${code}`);
-      this.db.get(sql, [email, code], (err, row) => {
+      console.log(`⏰ Current time for comparison: ${currentTime}`);
+      this.db.get(sql, [email, code, currentTime], (err, row) => {
         if (err) {
           console.log('❌ Database error:', err);
           reject(err);
         } else {
           console.log('📊 Database result:', row ? 'Found valid code' : 'No valid code found');
           if (row) {
-            console.log(`⏰ Code expires at: ${row.expires_at}, Current time: ${new Date().toISOString()}`);
+            console.log(`⏰ Code expires at: ${row.expires_at}, Current time: ${currentTime}`);
           }
           resolve(row);
         }
