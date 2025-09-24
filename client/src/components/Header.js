@@ -15,7 +15,9 @@ const Header = ({ showLoginModal, setShowLoginModal, showAdminDashboard, setShow
     const savedUser = localStorage.getItem('user');
     const savedToken = localStorage.getItem('sessionToken');
     if (savedUser && savedToken) {
-      setUser(JSON.parse(savedUser));
+      const userData = JSON.parse(savedUser);
+      console.log('Header - User data:', userData);
+      setUser(userData);
       fetchTrialStatus();
     }
   }, []);
@@ -34,6 +36,7 @@ const Header = ({ showLoginModal, setShowLoginModal, showAdminDashboard, setShow
       
       if (response.ok) {
         const data = await response.json();
+        console.log('Header - Trial status:', data);
         setTrialStatus(data);
       }
     } catch (error) {
@@ -114,10 +117,10 @@ const Header = ({ showLoginModal, setShowLoginModal, showAdminDashboard, setShow
                   </div>
                 )}
                 
-                {/* User Stats */}
+                {/* User Stats - Show trial images used for consistency */}
                 <div className="hidden md:flex items-center space-x-2 bg-gray-50 text-gray-700 px-3 py-1 rounded-full text-xs">
                   <ImageIcon className="h-3 w-3" />
-                  <span>{user.imagesProcessedCount || 0} processed</span>
+                  <span>{trialStatus?.trialInfo?.imagesUsed || user.imagesProcessedCount || 0} processed</span>
                 </div>
 
                 {/* User Email */}
@@ -235,7 +238,7 @@ const Header = ({ showLoginModal, setShowLoginModal, showAdminDashboard, setShow
                 
                 <div className="flex items-center space-x-2 bg-gray-50 text-gray-700 px-3 py-2 rounded-md text-xs">
                   <ImageIcon className="h-3 w-3" />
-                  <span>{user.imagesProcessedCount || 0} images processed</span>
+                  <span>{trialStatus?.trialInfo?.imagesUsed || user.imagesProcessedCount || 0} images processed</span>
                 </div>
 
                 {user.isAdmin && (
