@@ -14,15 +14,15 @@ const Home = () => {
               <span className="text-primary-600"> Photo Enhancement</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Transform your dealership equipment photos with AI-powered enhancement. 
-              Clean backgrounds, improve lighting, and make your equipment shine for better sales.
+              Transform your equipment photos into eye-catching thumbnails that drive more clicks and sales. 
+              Remove distracting objects, enhance backgrounds, and create professional-looking images that make equipment irresistible to buyers.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/upload"
                 className="bg-primary-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center"
               >
-                Start Processing Photos
+                Try Free Today - No Credit Card
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
               <Link
@@ -53,10 +53,10 @@ const Home = () => {
               <div className="bg-primary-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Zap className="h-8 w-8 text-primary-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">AI-Powered Enhancement</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Smart Object Removal</h3>
               <p className="text-gray-600">
-                Advanced AI algorithms automatically clean up backgrounds, enhance lighting, 
-                and improve image quality for professional results.
+                AI automatically removes distracting objects, people, and clutter from your photos, 
+                making your equipment the clear focal point that draws buyers' attention.
               </p>
             </div>
 
@@ -64,10 +64,10 @@ const Home = () => {
               <div className="bg-primary-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Camera className="h-8 w-8 text-primary-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Bulk Processing</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Enhanced Backgrounds</h3>
               <p className="text-gray-600">
-                Upload and process multiple equipment photos at once. 
-                Save time with batch processing capabilities.
+                Transform messy backgrounds into clean, professional surfaces. 
+                Add beautiful skies and landscapes that make your equipment photos more appealing.
               </p>
             </div>
 
@@ -75,10 +75,10 @@ const Home = () => {
               <div className="bg-primary-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Shield className="h-8 w-8 text-primary-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Secure & Private</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Sales-Ready Thumbnails</h3>
               <p className="text-gray-600">
-                Your images are processed securely and never stored permanently. 
-                Complete privacy and data protection.
+                Perfect for creating eye-catching listing thumbnails that increase click-through rates. 
+                Enhance your main gallery images to attract more potential buyers.
               </p>
             </div>
           </div>
@@ -138,13 +138,13 @@ const Home = () => {
             Ready to Transform Your Equipment Photos?
           </h2>
           <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of dealerships already using Equipment Photo Pro to enhance their listings.
+            Join thousands of dealerships already using Equipment Photo Pro to create compelling listing thumbnails that drive more sales.
           </p>
           <Link
             to="/upload"
             className="bg-white text-primary-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors inline-flex items-center"
           >
-            Start Free Trial
+            Start Free Trial - Just Email Required
             <ArrowRight className="ml-2 h-5 w-5" />
           </Link>
         </div>

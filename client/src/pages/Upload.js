@@ -627,14 +627,15 @@ The equipment must remain completely unchanged - only enhance the background, li
 
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Upload & Process Equipment Photos
+            Create Eye-Catching Equipment Thumbnails
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-4">
-            Upload your equipment photos and let our AI enhance them for better sales presentations
+            Transform your equipment photos into compelling listing thumbnails that drive more clicks and sales. 
+            Remove distracting objects, enhance backgrounds, and make your equipment irresistible to buyers.
           </p>
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 max-w-4xl mx-auto">
             <p className="text-green-800 text-sm">
-              <strong>AI Image Enhancement:</strong> Our advanced AI analyzes your equipment and generates professional images with customizable backgrounds, lighting, and settings to make your equipment photos stand out.
+              <strong>Smart Enhancement:</strong> Our AI removes distracting objects and clutter, places your equipment on clean professional surfaces, and enhances backgrounds with beautiful skies to create compelling listing thumbnails that attract more buyers.
             </p>
           </div>
         </div>
@@ -947,10 +948,19 @@ The equipment must remain completely unchanged - only enhance the background, li
                                     index === currentFactIndex ? 'bg-green-500' : 'bg-gray-300'
                                   }`}
                                 />
-                              ))}
-                            </div>
-                          </div>
-                        </div>
+                              )                  )}
+                </div>
+              </div>
+              
+              {/* Disclaimer */}
+              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <strong>Please note:</strong> Results may vary based on image quality, angle, and complexity. 
+                  Images with poor lighting, extreme angles, or multiple similar objects may produce less optimal results. 
+                  This tool works best for creating eye-catching thumbnails and enhancing listing photos.
+                </p>
+              </div>
+            </div>
                       </div>
                     </div>
 

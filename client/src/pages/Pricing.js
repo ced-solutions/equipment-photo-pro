@@ -11,9 +11,9 @@ const Pricing = () => {
       icon: Zap,
       features: [
         'Up to 100 photos per month',
-        'Basic AI enhancement',
-        'Background removal',
-        'Lighting improvement',
+        'Smart object removal',
+        'Background enhancement',
+        'Clean surface placement',
         'Email support',
         'Standard processing speed'
       ],
@@ -28,10 +28,10 @@ const Pricing = () => {
       icon: Star,
       features: [
         'Up to 500 photos per month',
-        'Advanced AI enhancement',
+        'Advanced object removal',
         'All Starter features',
-        'Color correction',
-        'Scratch removal',
+        'Enhanced sky backgrounds',
+        'Professional surface textures',
         'Priority support',
         'Faster processing',
         'Batch processing'
@@ -70,8 +70,8 @@ const Pricing = () => {
             Choose Your Plan
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Select the perfect plan for your dealership's photo enhancement needs. 
-            All plans include a 14-day free trial with no credit card required.
+            Select the perfect plan for creating compelling equipment listing thumbnails. 
+            All plans include a 30-day free trial with just your email - no credit card required.
           </p>
         </div>
 
@@ -148,7 +148,7 @@ const Pricing = () => {
                 How does the free trial work?
               </h3>
               <p className="text-gray-600">
-                Start with a 14-day free trial on any plan. No credit card required. 
+                Start with a 30-day free trial on any plan. Just provide your email - no credit card required. 
                 You can process photos and experience all features during the trial period.
               </p>
             </div>
@@ -191,11 +191,11 @@ const Pricing = () => {
             Ready to Transform Your Equipment Photos?
           </h2>
           <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of dealerships already using Equipment Photo Pro to enhance their listings and increase sales.
+            Join thousands of dealerships already using Equipment Photo Pro to create eye-catching listing thumbnails that drive more clicks and sales.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="bg-white text-primary-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors">
-              Start Free Trial
+              Try Free Today - Just Email
             </button>
             <button className="border border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-primary-600 transition-colors">
               Contact Sales
