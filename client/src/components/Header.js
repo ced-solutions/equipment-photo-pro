@@ -116,7 +116,6 @@ const Header = ({ showLoginModal, setShowLoginModal, showAdminDashboard, setShow
                     </span>
                   </div>
                 )}
-                
 
                 {/* User Email */}
                 <div className="hidden sm:flex items-center space-x-2 text-sm text-gray-700">
@@ -230,7 +229,6 @@ const Header = ({ showLoginModal, setShowLoginModal, showAdminDashboard, setShow
                     </span>
                   </div>
                 )}
-                
 
                 {user.isAdmin && (
                   <button
