@@ -1,8 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Upload as UploadIcon, Download, Eye, Edit3, History, Clock, Image as ImageIcon, LogOut, User, BarChart3 } from 'lucide-react';
+import { Upload as UploadIcon, Download, Eye, Edit3, History, Clock, Image as ImageIcon } from 'lucide-react';
 import ImageComparison from '../components/ImageComparison';
-import LoginModal from '../components/LoginModal';
-import AdminDashboard from '../components/AdminDashboard';
 import { API_ENDPOINTS } from '../config/api';
 
 const Upload = () => {
@@ -21,8 +19,6 @@ const Upload = () => {
   
   // Authentication state
   const [user, setUser] = useState(null);
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [trialStatus, setTrialStatus] = useState(null);
   const [promptSettings, setPromptSettings] = useState({
     skyType: 'subtle-clouds',
@@ -54,15 +50,8 @@ const Upload = () => {
   // Authentication functions
   const handleLoginSuccess = (userData) => {
     setUser(userData);
-    setShowLoginModal(false);
     // Fetch trial status after login
     setTimeout(() => fetchTrialStatus(), 500);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('sessionToken');
-    setUser(null);
   };
 
   const getAuthHeaders = () => {
@@ -384,7 +373,7 @@ The equipment must remain completely unchanged - only enhance the background, li
     setDragActive(false);
     
     if (!user) {
-      setShowLoginModal(true);
+      alert('Please sign in to upload images');
       return;
     }
     
@@ -398,7 +387,7 @@ The equipment must remain completely unchanged - only enhance the background, li
 
   const handleFileInput = (e) => {
     if (!user) {
-      setShowLoginModal(true);
+      alert('Please sign in to upload images');
       return;
     }
     
@@ -419,7 +408,7 @@ The equipment must remain completely unchanged - only enhance the background, li
 
     // Check if user is logged in
     if (!user) {
-      setShowLoginModal(true);
+      alert('Please sign in to upload images');
       return;
     }
 
@@ -635,50 +624,6 @@ The equipment must remain completely unchanged - only enhance the background, li
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Authentication Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div></div>
-          <div className="flex items-center space-x-4">
-            {user ? (
-              <>
-                <div className="flex items-center space-x-2">
-                  <User className="h-5 w-5 text-gray-600" />
-                  <span className="text-sm text-gray-700">{user.email}</span>
-                  <span className="text-xs text-gray-500">({user.imagesProcessedCount} processed)</span>
-                  {trialStatus && trialStatus.trialInfo && (
-                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                      Trial: {trialStatus.trialInfo.imagesRemaining || 0} images, {trialStatus.trialInfo.daysRemaining || 0} days left
-                    </span>
-                  )}
-                </div>
-                {user.isAdmin && (
-                  <button
-                    onClick={() => setShowAdminDashboard(true)}
-                    className="flex items-center space-x-1 px-3 py-1 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors"
-                  >
-                    <BarChart3 className="h-4 w-4" />
-                    <span className="text-sm">Admin</span>
-                  </button>
-                )}
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center space-x-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span className="text-sm">Logout</span>
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={() => setShowLoginModal(true)}
-                className="flex items-center space-x-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <User className="h-4 w-4" />
-                <span>Sign In</span>
-              </button>
-            )}
-          </div>
-        </div>
 
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -774,7 +719,7 @@ The equipment must remain completely unchanged - only enhance the background, li
                           Sign in required to upload
                         </p>
                         <button
-                          onClick={() => setShowLoginModal(true)}
+                          onClick={() => window.location.reload()}
                           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
                         >
                           Sign In to Continue
@@ -1265,17 +1210,6 @@ The equipment must remain completely unchanged - only enhance the background, li
         )}
       </div>
       
-      {/* Authentication Modals */}
-      <LoginModal 
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        onLoginSuccess={handleLoginSuccess}
-      />
-      
-      <AdminDashboard 
-        isOpen={showAdminDashboard}
-        onClose={() => setShowAdminDashboard(false)}
-      />
     </div>
   );
 };
