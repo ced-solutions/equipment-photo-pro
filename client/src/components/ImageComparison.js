@@ -51,6 +51,11 @@ const ImageComparison = ({ originalImage, enhancedImage, isOpen, onClose, onNext
     e.preventDefault();
   };
 
+  const handleTouchStart = (e) => {
+    setIsDragging(true);
+    e.preventDefault();
+  };
+
   const handleMouseMove = (e) => {
     if (!isDragging || !containerRef.current) return;
 
@@ -60,7 +65,20 @@ const ImageComparison = ({ originalImage, enhancedImage, isOpen, onClose, onNext
     setSliderPosition(Math.max(0, Math.min(100, percentage)));
   };
 
+  const handleTouchMove = (e) => {
+    if (!isDragging || !containerRef.current) return;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = e.touches[0].clientX - rect.left;
+    const percentage = (x / rect.width) * 100;
+    setSliderPosition(Math.max(0, Math.min(100, percentage)));
+  };
+
   const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleTouchEnd = () => {
     setIsDragging(false);
   };
 
@@ -68,15 +86,19 @@ const ImageComparison = ({ originalImage, enhancedImage, isOpen, onClose, onNext
     if (isOpen) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('touchmove', handleTouchMove);
+      document.addEventListener('touchend', handleTouchEnd);
       document.addEventListener('keydown', handleKeyDown);
     }
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen, isDragging, handleKeyDown, handleMouseMove]);
+  }, [isOpen, isDragging, handleKeyDown, handleMouseMove, handleTouchMove, handleTouchEnd]);
 
   if (!isOpen) return null;
 
@@ -126,9 +148,14 @@ const ImageComparison = ({ originalImage, enhancedImage, isOpen, onClose, onNext
           </div>
         </div>
 
-        {/* Instructions */}
-        <div className="absolute top-16 left-0 right-0 z-10 bg-black bg-opacity-50 text-white p-2 text-center text-sm">
-          Drag the slider or use arrow keys to compare images • {totalImages > 1 ? 'Use ← → keys or click arrows to navigate • ' : ''}Press ESC to close
+        {/* Instructions - Mobile Responsive */}
+        <div className="absolute top-16 left-0 right-0 z-10 bg-black bg-opacity-50 text-white p-2 text-center text-xs sm:text-sm">
+          <div className="hidden sm:block">
+            Drag the slider or use arrow keys to compare images • {totalImages > 1 ? 'Use ← → keys or click arrows to navigate • ' : ''}Press ESC to close
+          </div>
+          <div className="block sm:hidden">
+            Drag slider or use bottom slider to compare • {totalImages > 1 ? 'Tap arrows to navigate • ' : ''}Tap X to close
+          </div>
         </div>
 
         {/* Comparison Container */}
@@ -167,11 +194,12 @@ const ImageComparison = ({ originalImage, enhancedImage, isOpen, onClose, onNext
           {/* Slider */}
           <div
             ref={sliderRef}
-            className="absolute top-0 bottom-0 w-1 bg-white shadow-lg cursor-col-resize z-20"
+            className="absolute top-0 bottom-0 w-1 bg-white shadow-lg cursor-col-resize z-20 touch-none"
             style={{ left: `${sliderPosition}%` }}
             onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
           >
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 sm:w-8 sm:h-8 bg-white rounded-full shadow-lg flex items-center justify-center">
               <div className="flex space-x-1">
                 <ChevronLeft className="h-3 w-3 text-gray-600" />
                 <ChevronRight className="h-3 w-3 text-gray-600" />
@@ -186,15 +214,15 @@ const ImageComparison = ({ originalImage, enhancedImage, isOpen, onClose, onNext
           />
         </div>
 
-        {/* Slider Control */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-4 py-2 rounded-lg">
+        {/* Slider Control - Mobile Responsive */}
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-4 py-2 rounded-lg w-80 sm:w-auto">
           <input
             type="range"
             min="0"
             max="100"
             value={sliderPosition}
             onChange={(e) => setSliderPosition(Number(e.target.value))}
-            className="w-64 h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer slider"
+            className="w-full h-3 sm:h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer slider touch-manipulation"
           />
           <div className="flex justify-between text-xs mt-1">
             <span>Original</span>

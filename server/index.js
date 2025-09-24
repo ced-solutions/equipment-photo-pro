@@ -77,25 +77,6 @@ const enhanceImage = async (inputPath, outputPath, settings, prompt) => {
         fs.writeFileSync(outputPath, aiImageBuffer);
         console.log('AI generated image saved to:', outputPath);
         return; // Skip the manual processing
-      } else if (aiResult.quotaExceeded) {
-        console.log('Google AI quota exceeded, using enhanced manual processing...');
-        // Apply very dramatic enhancements when quota is exceeded
-        aiEnhancements = {
-          backgroundReplacement: true,
-          lightingAdjustment: 1.6,
-          colorSaturation: 1.8,
-          contrast: 1.8,
-          brightness: 1.6,
-          sharpness: 2.0,
-          hueShift: 8, // Strong warm tone for cement lot
-          equipmentType: "Equipment",
-          enhancementDescription: "Professional equipment photo with enhanced lighting and background simulation (AI quota exceeded)",
-          recommendations: ["Applied dramatic enhancements due to AI quota limits"],
-          preserveElements: ["text", "logos", "numbers"],
-          processingSteps: ["enhance_lighting", "improve_colors", "sharpen_details", "background_simulation"],
-          dramatic: true,
-          quotaExceeded: true
-        };
       } else {
         console.log('AI provided analysis, applying dramatic enhancements based on prompt...');
         // Apply very dramatic enhancements to simulate the AI prompt requirements
@@ -128,12 +109,10 @@ const enhanceImage = async (inputPath, outputPath, settings, prompt) => {
     console.log('Background description:', aiEnhancements.backgroundDescription);
     
     // Apply more dramatic enhancements based on AI recommendations
-    // Make them even more dramatic if quota was exceeded
-    const isQuotaExceeded = aiEnhancements.quotaExceeded;
-    const brightness = Math.max(1.2, aiEnhancements.brightness || (isQuotaExceeded ? 1.6 : 1.3));
-    const contrast = Math.max(1.2, aiEnhancements.contrast || (isQuotaExceeded ? 1.8 : 1.3));
-    const saturation = Math.max(1.3, aiEnhancements.colorSaturation || (isQuotaExceeded ? 1.8 : 1.4));
-    const sharpness = Math.max(1.4, aiEnhancements.sharpness || (isQuotaExceeded ? 2.0 : 1.5));
+    const brightness = Math.max(1.2, aiEnhancements.brightness || 1.3);
+    const contrast = Math.max(1.2, aiEnhancements.contrast || 1.3);
+    const saturation = Math.max(1.3, aiEnhancements.colorSaturation || 1.4);
+    const sharpness = Math.max(1.4, aiEnhancements.sharpness || 1.5);
     
     console.log('Enhanced values:', { brightness, contrast, saturation, sharpness });
     

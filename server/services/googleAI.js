@@ -64,16 +64,21 @@ Provide a detailed description that could be used to recreate this equipment in 
 Apply these enhancement requirements:
 ${prompt}
 
-Generate a new image that:
-1. Shows the same type of equipment with the same colors and details
-2. Places the equipment on a realistic, textured cement lot
-3. Features a natural, subtly rolling landscape of green fields in the background
-4. Includes an expansive sky with subtle, diffused clouds or light natural haze
-5. Has realistic, balanced lighting that enhances the subject without looking artificial
-6. Maintains a clean, professional aesthetic
-7. Preserves all text, numbers, and logos from the original equipment
+CRITICAL REQUIREMENTS - DO NOT MODIFY THE EQUIPMENT:
+1. Keep the equipment in EXACTLY the same position, orientation, and direction as the original
+2. Do NOT flip, rotate, or change the direction the equipment is facing
+3. Do NOT change the equipment's colors, markings, or physical appearance
+4. Do NOT alter any text, numbers, logos, or branding on the equipment
+5. Do NOT change the equipment's angle, perspective, or zoom level
 
-The image should look professional and suitable for a dealership listing.`;
+ONLY modify the background and environment:
+1. Replace the background with a realistic, textured cement lot
+2. Add a natural, subtly rolling landscape of green fields in the background
+3. Include an expansive sky with subtle, diffused clouds or light natural haze
+4. Adjust lighting to be realistic and professional without changing the equipment
+5. Remove any unwanted background objects while preserving the equipment exactly as-is
+
+The equipment must remain completely unchanged - only enhance the background and lighting.`;
 
       console.log('Generating enhanced image with Gemini 2.5 Flash image model...');
       

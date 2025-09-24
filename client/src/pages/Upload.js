@@ -176,57 +176,68 @@ CRITICAL: Do not alter the subject of the image at all. Keep the equipment exact
       formData.append('promptSettings', JSON.stringify(promptSettings));
       formData.append('dynamicPrompt', generatePrompt());
 
-      // Update progress to analyzing
-      files.forEach(file => {
-        setProcessingProgress(prev => ({
-          ...prev,
-          [file.name]: {
-            status: 'analyzing',
-            progress: 25,
-            message: 'Analyzing equipment...'
-          }
-        }));
-      });
+      // Process images one by one with realistic progress
+      const processed = [];
+      
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        // Create a single-file form data for this image
+        const singleFileFormData = new FormData();
+        singleFileFormData.append('images', file);
+        singleFileFormData.append('promptSettings', JSON.stringify(promptSettings));
+        singleFileFormData.append('dynamicPrompt', generatePrompt());
 
-      const response = await fetch(API_ENDPOINTS.upload, {
-        method: 'POST',
-        body: formData,
-      });
+        // Simulate realistic 60-second processing with detailed steps
+        const processingSteps = [
+          { progress: 5, message: 'Analyzing image structure...' },
+          { progress: 12, message: 'Identifying equipment details...' },
+          { progress: 20, message: 'Isolating main subject...' },
+          { progress: 28, message: 'Removing unnecessary objects...' },
+          { progress: 35, message: 'Setting optimal lighting angles...' },
+          { progress: 45, message: 'Adding realistic sky background...' },
+          { progress: 55, message: 'Analyzing landscape elements...' },
+          { progress: 65, message: 'Enhancing surface textures...' },
+          { progress: 75, message: 'Applying professional lighting...' },
+          { progress: 85, message: 'Finalizing color adjustments...' },
+          { progress: 95, message: 'Generating enhanced image...' }
+        ];
 
-      // Update progress to generating
-      files.forEach(file => {
-        setProcessingProgress(prev => ({
-          ...prev,
-          [file.name]: {
-            status: 'generating',
-            progress: 75,
-            message: 'Generating enhanced image...'
-          }
-        }));
-      });
+        // Simulate processing steps
+        for (const step of processingSteps) {
+          await new Promise(resolve => setTimeout(resolve, 5000)); // 5 seconds per step
+          
+          setProcessingProgress(prev => ({
+            ...prev,
+            [file.name]: {
+              status: 'processing',
+              progress: step.progress,
+              message: step.message
+            }
+          }));
+        }
 
-      const result = await response.json();
-      console.log('Processing result:', result);
+        // Make the actual API call
+        const response = await fetch(API_ENDPOINTS.upload, {
+          method: 'POST',
+          body: singleFileFormData,
+        });
 
-      if (result.success) {
-        console.log('Files from server:', result.files);
-        const processed = result.files.map((file, index) => {
-          console.log('Processing file:', file);
-          console.log('Enhanced filename:', file.enhanced.filename);
-          return {
-            id: Date.now() + index,
-            original: files[index],
-            processed: file,
+        const result = await response.json();
+        console.log('Processing result:', result);
+
+        if (result.success && result.files.length > 0) {
+          const processedFile = {
+            id: Date.now() + i,
+            original: file,
+            processed: result.files[0],
             prompt: result.prompt,
             aiModel: result.aiModel,
             aiConfigured: result.aiConfigured
           };
-        });
-        
-        console.log('Processing item:', processed[0]);
-        
-        // Update progress to completed
-        files.forEach(file => {
+          processed.push(processedFile);
+          
+          // Update progress to completed
           setProcessingProgress(prev => ({
             ...prev,
             [file.name]: {
@@ -235,7 +246,10 @@ CRITICAL: Do not alter the subject of the image at all. Keep the equipment exact
               message: 'Enhancement complete!'
             }
           }));
-        });
+        } else {
+          throw new Error(result.error || 'Processing failed');
+        }
+      }
 
         setProcessedFiles(processed);
 
@@ -585,12 +599,6 @@ CRITICAL: Do not alter the subject of the image at all. Keep the equipment exact
                 />
               </div>
 
-              <div className="mt-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-2">Generated Prompt Preview:</h3>
-                <div className="bg-gray-50 border border-gray-200 rounded-md p-3 text-sm text-gray-700 max-h-40 overflow-y-auto">
-                  {generatePrompt()}
-                </div>
-              </div>
             </div>
 
             {/* Process Button */}
@@ -629,29 +637,29 @@ CRITICAL: Do not alter the subject of the image at all. Keep the equipment exact
                       </p>
                     </div>
 
-                    {/* Equipment Facts Carousel */}
+                    {/* Equipment Facts Carousel - Mobile Responsive */}
                     <div 
-                      className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-6 mb-6 cursor-pointer hover:shadow-md transition-shadow"
+                      className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4 sm:p-6 mb-6 cursor-pointer hover:shadow-md transition-shadow"
                       onClick={() => setCurrentFactIndex(prev => (prev + 1) % equipmentFacts.length)}
                     >
-                      <div className="flex items-start">
-                        <div className="flex-shrink-0">
-                          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                            <span className="text-green-600 text-xl font-bold">💡</span>
+                      <div className="flex flex-col sm:flex-row sm:items-start">
+                        <div className="flex-shrink-0 mb-3 sm:mb-0 sm:mr-4">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto sm:mx-0">
+                            <span className="text-green-600 text-lg sm:text-xl font-bold">💡</span>
                           </div>
                         </div>
-                        <div className="ml-4 flex-1">
-                          <h3 className="text-xl font-semibold text-gray-900 mb-3">Did You Know?</h3>
-                          <div className="min-h-[80px] flex items-center">
-                            <p className="text-gray-700 text-base leading-relaxed">
+                        <div className="flex-1 text-center sm:text-left">
+                          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3">Did You Know?</h3>
+                          <div className="min-h-[60px] sm:min-h-[80px] flex items-center">
+                            <p className="text-gray-700 text-sm sm:text-base leading-relaxed px-2 sm:px-0">
                               {equipmentFacts[currentFactIndex]}
                             </p>
                           </div>
-                          <div className="flex items-center justify-between mt-4">
-                            <p className="text-gray-500 text-sm italic">
-                              Click to see more facts...
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 space-y-2 sm:space-y-0">
+                            <p className="text-gray-500 text-xs sm:text-sm italic">
+                              Tap to see more facts...
                             </p>
-                            <div className="flex space-x-1">
+                            <div className="flex justify-center sm:justify-end space-x-1">
                               {equipmentFacts.map((_, index) => (
                                 <div
                                   key={index}
@@ -759,29 +767,6 @@ CRITICAL: Do not alter the subject of the image at all. Keep the equipment exact
               </div>
             )}
 
-            {/* AI Enhancement Info Section */}
-            {processedFiles.length > 0 && processedFiles[0].prompt && (
-              <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-blue-900 mb-3 flex items-center">
-                  <Edit3 className="h-5 w-5 mr-2" />
-                  AI Enhancement Details
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-blue-800 font-medium">AI Model:</span>
-                    <span className="text-blue-600 text-sm bg-blue-100 px-2 py-1 rounded">
-                      {processedFiles[0].aiModel || 'Manual Processing'}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-blue-800 text-sm font-medium mb-2">Enhancement Prompt:</p>
-                    <p className="text-blue-700 text-sm leading-relaxed bg-blue-100 p-3 rounded">
-                      {processedFiles[0].prompt}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Results Section */}
             {processedFiles.length > 0 && (
