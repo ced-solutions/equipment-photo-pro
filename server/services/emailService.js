@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '../../.env' });
 const nodemailer = require('nodemailer');
 
 class EmailService {
@@ -18,13 +19,33 @@ class EmailService {
 
     if (emailConfig.user && emailConfig.password) {
       // Configure real email service
-      this.transporter = nodemailer.createTransport({
-        service: emailConfig.service,
-        auth: {
-          user: emailConfig.user,
-          pass: emailConfig.password
-        }
-      });
+      if (emailConfig.service === 'sendgrid') {
+        // SendGrid configuration
+        this.transporter = nodemailer.createTransport({
+          host: 'smtp.sendgrid.net',
+          port: 587,
+          secure: false,
+          auth: {
+            user: 'apikey',
+            pass: emailConfig.password
+          },
+          connectionTimeout: 60000, // 60 seconds
+          greetingTimeout: 30000,   // 30 seconds
+          socketTimeout: 60000,     // 60 seconds
+          tls: {
+            rejectUnauthorized: false
+          }
+        });
+      } else {
+        // Gmail/other services
+        this.transporter = nodemailer.createTransport({
+          service: emailConfig.service,
+          auth: {
+            user: emailConfig.user,
+            pass: emailConfig.password
+          }
+        });
+      }
       
       this.fromAddress = emailConfig.from;
       this.isConfigured = true;
@@ -98,10 +119,14 @@ class EmailService {
         console.log(`📤 Attempting to send email to ${email}...`);
         console.log(`📧 Email config - Service: ${process.env.EMAIL_SERVICE}, User: ${process.env.EMAIL_USER}`);
         
+        // Test connection first
+        await this.transporter.verify();
+        console.log('✅ SMTP connection verified');
+        
         // Add timeout to prevent hanging
         const sendPromise = this.transporter.sendMail(mailOptions);
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Email send timeout after 30 seconds')), 30000)
+          setTimeout(() => reject(new Error('Email send timeout after 60 seconds')), 60000)
         );
         
         const result = await Promise.race([sendPromise, timeoutPromise]);
@@ -114,6 +139,7 @@ class EmailService {
         // Fallback to console logging if email fails
         console.log(`\n📧 EMAIL VERIFICATION CODE for ${email}: ${code}\n`);
         console.log('🔧 Email service failed, using fallback logging');
+        console.log('💡 Check your SendGrid API key and network connection');
         return Promise.resolve({ messageId: 'fallback-' + Date.now() });
       }
     } else {

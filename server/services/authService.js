@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '../../.env' });
 const crypto = require('crypto');
 const DatabaseService = require('./database');
 const EmailService = require('./emailService');
