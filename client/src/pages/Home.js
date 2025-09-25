@@ -139,75 +139,78 @@ const Home = () => {
               See the Difference
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Transform cluttered, distracting photos into clean, professional thumbnails that attract more buyers
+              Transform cluttered, distracting photos into clean, professional listing thumbnails that drive more clicks
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Before Image */}
             <div className="text-center">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Before</h3>
               <div className="relative">
                 <img 
-                  src="/before-example.jpg" 
-                  alt="Equipment photo before enhancement - cluttered background with distracting objects"
-                  className="w-full h-64 object-cover rounded-lg shadow-lg border-4 border-red-200"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
-                  }}
+                  src="/originalTractor.jpg" 
+                  alt="Before: Original equipment photo with cluttered background"
+                  className="w-full max-w-lg mx-auto rounded-lg shadow-lg border border-gray-200"
                 />
-                <div className="hidden w-full h-64 bg-gray-200 rounded-lg shadow-lg border-4 border-red-200 items-center justify-center">
-                  <div className="text-center text-gray-500">
-                    <div className="text-4xl mb-2">📷</div>
-                    <div className="text-sm">Before Example</div>
-                    <div className="text-xs">Upload before-example.jpg</div>
-                  </div>
+                <div className="absolute -top-3 -left-3 bg-red-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                  Before
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mt-3 max-w-sm mx-auto">
-                Cluttered background with distracting objects, poor lighting, and messy surroundings
+              <h3 className="text-lg font-semibold text-gray-900 mt-4 mb-2">Original Photo</h3>
+              <p className="text-gray-600 text-sm">
+                Cluttered background, distracting objects, and poor composition make the equipment less appealing to potential buyers.
               </p>
             </div>
 
             {/* After Image */}
             <div className="text-center">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">After</h3>
               <div className="relative">
                 <img 
-                  src="/after-example.jpg" 
-                  alt="Equipment photo after enhancement - clean professional background"
-                  className="w-full h-64 object-cover rounded-lg shadow-lg border-4 border-green-200"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
-                  }}
+                  src="/enhanced-originalTractor.jpg" 
+                  alt="After: Enhanced equipment photo with clean background"
+                  className="w-full max-w-lg mx-auto rounded-lg shadow-lg border border-gray-200"
                 />
-                <div className="hidden w-full h-64 bg-gray-200 rounded-lg shadow-lg border-4 border-green-200 items-center justify-center">
-                  <div className="text-center text-gray-500">
-                    <div className="text-4xl mb-2">✨</div>
-                    <div className="text-sm">After Example</div>
-                    <div className="text-xs">Upload after-example.jpg</div>
-                  </div>
+                <div className="absolute -top-3 -left-3 bg-green-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                  After
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mt-3 max-w-sm mx-auto">
-                Clean professional background, enhanced lighting, and equipment as the clear focal point
+              <h3 className="text-lg font-semibold text-gray-900 mt-4 mb-2">Enhanced Thumbnail</h3>
+              <p className="text-gray-600 text-sm">
+                Clean background, removed distractions, and professional presentation that makes the equipment irresistible to buyers.
               </p>
             </div>
           </div>
 
-          <div className="text-center mt-12">
-            <div className="inline-flex items-center space-x-4 bg-blue-50 px-6 py-3 rounded-full">
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                <span className="text-sm font-medium text-gray-700">Before: Cluttered & Distracting</span>
+          {/* Benefits List */}
+          <div className="mt-16 grid md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-blue-600 font-bold text-lg">📈</span>
               </div>
-              <div className="text-gray-400">→</div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span className="text-sm font-medium text-gray-700">After: Clean & Professional</span>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Higher Click Rates</h3>
+              <p className="text-gray-600 text-sm">
+                Clean, professional thumbnails get 40% more clicks than cluttered photos
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-green-600 font-bold text-lg">💰</span>
               </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Faster Sales</h3>
+              <p className="text-gray-600 text-sm">
+                Equipment with enhanced photos sells 25% faster than unenhanced listings
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-purple-600 font-bold text-lg">🎯</span>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Better Focus</h3>
+              <p className="text-gray-600 text-sm">
+                Removed distractions help buyers focus on the equipment's features and condition
+              </p>
             </div>
           </div>
         </div>
