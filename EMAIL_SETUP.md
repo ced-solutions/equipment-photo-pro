@@ -42,15 +42,52 @@ By default, the system runs in **development mode** and logs verification codes 
    EMAIL_FROM=Equipment Photo Pro <noreply@yourdomain.com>
    ```
 
+### Option 4: SendGrid with Gmail Fallback (Most Reliable)
+
+For maximum reliability, you can configure SendGrid as primary with Gmail as fallback:
+
+1. **Set up SendGrid** (as above)
+2. **Set up Gmail** (as in Option 1)
+3. **Add to your `.env` file**:
+   ```env
+   EMAIL_SERVICE=sendgrid
+   EMAIL_USER=apikey
+   EMAIL_PASSWORD=your_sendgrid_api_key
+   EMAIL_FROM=Equipment Photo Pro <noreply@yourdomain.com>
+   
+   # Gmail fallback (optional)
+   GMAIL_USER=your_email@gmail.com
+   GMAIL_PASSWORD=your_gmail_app_password
+   ```
+
 ## 🚀 Production Setup (Render)
 
 For production deployment on Render, add these environment variables in your Render dashboard:
 
+**Option A: SendGrid (Recommended)**
+```
+EMAIL_SERVICE=sendgrid
+EMAIL_USER=apikey
+EMAIL_PASSWORD=your_sendgrid_api_key
+EMAIL_FROM=Equipment Photo Pro <noreply@yourdomain.com>
+```
+
+**Option B: Gmail**
 ```
 EMAIL_SERVICE=gmail
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASSWORD=your_app_password
 EMAIL_FROM=Equipment Photo Pro <your_email@gmail.com>
+```
+
+**Option C: SendGrid with Gmail Fallback (Most Reliable)**
+```
+EMAIL_SERVICE=sendgrid
+EMAIL_USER=apikey
+EMAIL_PASSWORD=your_sendgrid_api_key
+EMAIL_FROM=Equipment Photo Pro <noreply@yourdomain.com>
+GMAIL_USER=your_email@gmail.com
+GMAIL_PASSWORD=your_gmail_app_password
 ```
 
 ## 🔍 How to Check Current Status

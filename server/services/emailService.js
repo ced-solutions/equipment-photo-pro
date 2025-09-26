@@ -1,9 +1,11 @@
-require('dotenv').config({ path: '../../.env' });
+require('dotenv').config();
 const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 
 class EmailService {
   constructor() {
     this.transporter = null;
+    this.fallbackTransporter = null;
     this.isConfigured = false;
     this.init();
   }
@@ -20,36 +22,44 @@ class EmailService {
     if (emailConfig.user && emailConfig.password) {
       // Configure real email service
       if (emailConfig.service === 'sendgrid') {
-        // SendGrid configuration
-        this.transporter = nodemailer.createTransport({
-          host: 'smtp.sendgrid.net',
-          port: 587,
-          secure: false,
-          auth: {
-            user: 'apikey',
-            pass: emailConfig.password
-          },
-          connectionTimeout: 60000, // 60 seconds
-          greetingTimeout: 30000,   // 30 seconds
-          socketTimeout: 60000,     // 60 seconds
-          tls: {
-            rejectUnauthorized: false
-          }
-        });
+        // SendGrid Web API configuration (more reliable than SMTP)
+        sgMail.setApiKey(emailConfig.password);
+        this.emailService = 'sendgrid';
+        console.log('Email service initialized with SendGrid Web API');
+        
+        // Set up Gmail fallback if Gmail credentials are available
+        if (process.env.GMAIL_USER && process.env.GMAIL_PASSWORD) {
+          this.fallbackTransporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: process.env.GMAIL_USER,
+              pass: process.env.GMAIL_PASSWORD
+            },
+            connectionTimeout: 30000,
+            greetingTimeout: 15000,
+            socketTimeout: 30000,
+          });
+          console.log('Gmail fallback email service configured');
+        }
       } else {
-        // Gmail/other services
+        // Gmail/other services using SMTP
         this.transporter = nodemailer.createTransport({
           service: emailConfig.service,
           auth: {
             user: emailConfig.user,
             pass: emailConfig.password
-          }
+          },
+          connectionTimeout: 30000, // 30 seconds
+          greetingTimeout: 15000,   // 15 seconds
+          socketTimeout: 30000,     // 30 seconds
         });
+        this.emailService = 'smtp';
+        console.log(`Email service initialized with ${emailConfig.service} SMTP`);
       }
       
       this.fromAddress = emailConfig.from;
       this.isConfigured = true;
-      console.log('Email service initialized with real SMTP');
+      console.log(`Email service initialized successfully with ${emailConfig.service}`);
     } else {
       // Development mode - log to console
       console.log('Email service initialized (development mode - no SMTP configured)');
@@ -113,33 +123,73 @@ class EmailService {
       `
     };
 
-    // Send email if transporter is configured, otherwise log to console
-    if (this.transporter) {
+    // Send email if configured, otherwise log to console
+    if (this.isConfigured) {
       try {
         console.log(`📤 Attempting to send email to ${email}...`);
         console.log(`📧 Email config - Service: ${process.env.EMAIL_SERVICE}, User: ${process.env.EMAIL_USER}`);
         
-        // Test connection first
-        await this.transporter.verify();
-        console.log('✅ SMTP connection verified');
+        let result;
         
-        // Add timeout to prevent hanging
-        const sendPromise = this.transporter.sendMail(mailOptions);
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Email send timeout after 60 seconds')), 60000)
-        );
+        if (this.emailService === 'sendgrid') {
+          // Use SendGrid Web API
+          const msg = {
+            to: email,
+            from: this.fromAddress || 'Equipment Photo Pro <noreply@equipmentphotopro.com>',
+            subject: 'Your Equipment Photo Pro Login Code',
+            text: mailOptions.text,
+            html: mailOptions.html,
+          };
+          
+          console.log(`📧 SendGrid message prepared:`, {
+            to: msg.to,
+            from: msg.from,
+            subject: msg.subject,
+            hasHtml: !!msg.html,
+            hasText: !!msg.text
+          });
+          
+          result = await sgMail.send(msg);
+          console.log(`✅ Verification code sent to ${email} via SendGrid Web API`);
+        } else if (this.transporter) {
+          // Use SMTP for other services
+          await this.transporter.verify();
+          console.log('✅ SMTP connection verified');
+          
+          // Add timeout to prevent hanging
+          const sendPromise = this.transporter.sendMail(mailOptions);
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Email send timeout after 30 seconds')), 30000)
+          );
+          
+          result = await Promise.race([sendPromise, timeoutPromise]);
+          console.log(`✅ Verification code sent to ${email} via SMTP`);
+        } else {
+          throw new Error('No email service configured');
+        }
         
-        const result = await Promise.race([sendPromise, timeoutPromise]);
-        console.log(`✅ Verification code sent to ${email}`, result.messageId);
         return result;
       } catch (error) {
         console.error('❌ Failed to send email:', error.message);
         console.error('❌ Full error:', error);
         
-        // Fallback to console logging if email fails
+        // Try fallback email service if available
+        if (this.fallbackTransporter && this.emailService === 'sendgrid') {
+          try {
+            console.log('🔄 Attempting fallback email service (Gmail)...');
+            await this.fallbackTransporter.verify();
+            result = await this.fallbackTransporter.sendMail(mailOptions);
+            console.log(`✅ Verification code sent to ${email} via Gmail fallback`);
+            return result;
+          } catch (fallbackError) {
+            console.error('❌ Fallback email also failed:', fallbackError.message);
+          }
+        }
+        
+        // Fallback to console logging if all email services fail
         console.log(`\n📧 EMAIL VERIFICATION CODE for ${email}: ${code}\n`);
-        console.log('🔧 Email service failed, using fallback logging');
-        console.log('💡 Check your SendGrid API key and network connection');
+        console.log('🔧 All email services failed, using fallback logging');
+        console.log('💡 Check your email configuration and network connection');
         return Promise.resolve({ messageId: 'fallback-' + Date.now() });
       }
     } else {
