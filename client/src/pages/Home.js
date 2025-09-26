@@ -189,7 +189,7 @@ const Home = () => {
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Higher Click Rates</h3>
               <p className="text-gray-600 text-sm">
-                Clean, professional thumbnails get 40% more clicks than cluttered photos
+                Clean, professional thumbnails typically get more clicks than cluttered photos
               </p>
             </div>
 
@@ -199,7 +199,7 @@ const Home = () => {
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Faster Sales</h3>
               <p className="text-gray-600 text-sm">
-                Equipment with enhanced photos sells 25% faster than unenhanced listings
+                Equipment with enhanced photos typically sells faster than unenhanced listings
               </p>
             </div>
 
