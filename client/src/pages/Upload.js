@@ -859,9 +859,12 @@ The equipment must remain completely unchanged - only enhance the background, li
                     type="text"
                     value={promptSettings.equipmentType}
                     onChange={(e) => setPromptSettings(prev => ({ ...prev, equipmentType: e.target.value }))}
-                    placeholder="e.g., red tractor, combine harvester, green ATV"
+                    placeholder="e.g., John Deere Tractor, Case IH Combine, Kubota Excavator"
                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    This helps identify the main subject of the image to feature. Examples: "John Deere Tractor" or "Case IH Combine". Leave blank if unsure.
+                  </p>
                 </div>
               </div>
 
@@ -874,6 +877,9 @@ The equipment must remain completely unchanged - only enhance the background, li
                   rows={3}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Want something else changed or the first render didn't do exactly what you were expecting? Try adding specific instructions here, like "include the loader bucket" or "remove the background building".
+                </p>
               </div>
 
             </div>
