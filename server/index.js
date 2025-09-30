@@ -453,6 +453,25 @@ app.get('/api/auth/trial-status', authService.requireAuth.bind(authService), asy
   }
 });
 
+// Session validation endpoint
+app.get('/api/auth/validate-session', authService.requireAuth.bind(authService), async (req, res) => {
+  try {
+    res.json({ 
+      success: true, 
+      message: 'Session is valid',
+      user: {
+        id: req.user.id,
+        email: req.user.email,
+        imagesProcessedCount: req.user.imagesProcessedCount,
+        isAdmin: req.user.isAdmin
+      }
+    });
+  } catch (error) {
+    console.error('Error validating session:', error);
+    res.status(401).json({ error: 'Session validation failed' });
+  }
+});
+
 // Admin Routes
 app.get('/api/admin/stats', authService.requireAdmin.bind(authService), async (req, res) => {
   try {

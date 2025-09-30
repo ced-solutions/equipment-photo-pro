@@ -20,6 +20,7 @@ const Upload = () => {
   // Authentication state
   const [user, setUser] = useState(null);
   const [trialStatus, setTrialStatus] = useState(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
   const [promptSettings, setPromptSettings] = useState({
     skyType: 'subtle-clouds',
     pavementType: 'cement-lot',
@@ -74,10 +75,50 @@ const Upload = () => {
       if (response.ok) {
         const data = await response.json();
         setTrialStatus(data);
+      } else if (response.status === 401) {
+        // Session expired
+        handleSessionExpired();
       }
     } catch (error) {
       console.error('Error fetching trial status:', error);
     }
+  };
+
+  const validateSession = async () => {
+    const token = localStorage.getItem('sessionToken');
+    if (!token) {
+      handleSessionExpired();
+      return false;
+    }
+
+    try {
+      const API_BASE_URL = process.env.NODE_ENV === 'production' 
+        ? 'https://equipment-photo-pro.onrender.com'
+        : 'http://localhost:5001';
+        
+      const response = await fetch(`${API_BASE_URL}/api/auth/validate-session`, {
+        headers: getAuthHeaders(),
+      });
+      
+      if (response.ok) {
+        return true;
+      } else if (response.status === 401) {
+        handleSessionExpired();
+        return false;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error validating session:', error);
+      return false;
+    }
+  };
+
+  const handleSessionExpired = () => {
+    setSessionExpired(true);
+    setUser(null);
+    setTrialStatus(null);
+    localStorage.removeItem('user');
+    localStorage.removeItem('sessionToken');
   };
 
   // Save history to localStorage whenever it changes
@@ -405,6 +446,13 @@ The equipment must remain completely unchanged - only enhance the background, li
 
   const processImages = async () => {
     if (files.length === 0) return;
+
+    // Validate session first
+    const isSessionValid = await validateSession();
+    if (!isSessionValid) {
+      setSessionExpired(true);
+      return;
+    }
 
     // Check if user is logged in
     if (!user) {
@@ -1225,6 +1273,44 @@ The equipment must remain completely unchanged - only enhance the background, li
             currentIndex={currentComparisonIndex}
             totalImages={selectedComparison.allImages ? selectedComparison.allImages.length : 1}
           />
+        )}
+
+        {/* Session Expired Modal */}
+        {sessionExpired && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md mx-4">
+              <div className="text-center">
+                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                  <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Session Expired
+                </h3>
+                <p className="text-sm text-gray-600 mb-6">
+                  Your session has expired. Please sign in again to continue processing images.
+                </p>
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => {
+                      setSessionExpired(false);
+                      window.location.reload();
+                    }}
+                    className="flex-1 bg-primary-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary-700 transition-colors"
+                  >
+                    Sign In Again
+                  </button>
+                  <button
+                    onClick={() => setSessionExpired(false)}
+                    className="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-400 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </div>
       
